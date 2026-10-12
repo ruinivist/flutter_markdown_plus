@@ -24,12 +24,13 @@ double _gap(WidgetTester tester, String before, String after) =>
 // ---------- Spacing behavior ----------
 
 void main() {
-  final MarkdownStyleSheet style = MarkdownStyleSheet(blockSpacing: 23, listItemSpacing: 7, headingSpacing: 11);
+  final MarkdownStyleSheet style =
+      MarkdownStyleSheet(blockSpacing: 23, listItemSpacing: 7, headingSpacing: 11, headingBeforeSpacing: 31);
 
-  testWidgets('headings use their gap only after a heading, without edge gaps', (WidgetTester tester) async {
+  testWidgets('headings have asymmetric gaps without edge gaps', (WidgetTester tester) async {
     await _pumpMarkdown(tester, 'Start\n\n# First\n## Second\n\nEnd\n\nFinal', style);
-    expect(_gap(tester, 'Start', 'First'), 23);
-    expect(_gap(tester, 'First', 'Second'), 11);
+    expect(_gap(tester, 'Start', 'First'), 31);
+    expect(_gap(tester, 'First', 'Second'), 31);
     expect(_gap(tester, 'Second', 'End'), 11);
     expect(_gap(tester, 'End', 'Final'), 23);
     expect(tester.getTopLeft(find.text('Start')).dy, tester.getTopLeft(find.byType(MarkdownBody)).dy);
@@ -65,12 +66,22 @@ void main() {
       await tester.pumpWidget(MaterialApp(
           home: Scaffold(
               body: Markdown(
-        data: '# Heading\n\nParagraph\n\n- First\n- Second',
-        styleSheet: style.copyWith(headingSpacing: spacing, listItemSpacing: spacing),
+        data: 'Intro\n\n# Heading\n\nParagraph\n\n- First\n- Second',
+        styleSheet: style.copyWith(headingSpacing: spacing, headingBeforeSpacing: spacing, listItemSpacing: spacing),
       ))));
+      expect(_gap(tester, 'Intro', 'Heading'), spacing);
       expect(_gap(tester, 'Heading', 'Paragraph'), spacing);
       expect(_gap(tester, 'First', 'Second'), spacing);
     }
+  });
+
+  testWidgets('nested first headings stay flush while later headings get a gap', (WidgetTester tester) async {
+    await _pumpMarkdown(tester, '- # First heading\n\n  Paragraph\n\n  ## Later heading', style);
+    final Finder content = find.descendant(of: find.byType(Flexible), matching: find.byType(Column)).first;
+    expect(tester.getTopLeft(find.text('First heading')).dy, tester.getTopLeft(content).dy);
+    expect(_gap(tester, 'Paragraph', 'Later heading'), 31);
+    await _pumpMarkdown(tester, '> # Quote heading\n>\n> Text\n>\n> ## Next heading', style);
+    expect(_gap(tester, 'Text', 'Next heading'), 31);
   });
 
   testWidgets('unset builder spacing falls back to block spacing', (WidgetTester tester) async {
@@ -98,6 +109,8 @@ void main() {
       );
       return Column(
           children: builder.build(md.Document().parseLines(<String>[
+        'Intro',
+        '',
         '# Heading',
         '',
         'Paragraph',
@@ -106,15 +119,17 @@ void main() {
         '- Second',
       ])));
     })));
+    expect(_gap(tester, 'Intro', 'Heading'), 23);
     expect(_gap(tester, 'Heading', 'Paragraph'), 23);
     expect(_gap(tester, 'First', 'Second'), 23);
   });
 
   for (int level = 1; level <= 6; level += 1) {
-    testWidgets('h$level has no trailing gap', (WidgetTester tester) async {
+    testWidgets('h$level has no leading or trailing gap', (WidgetTester tester) async {
       await _pumpMarkdown(tester, '${'#' * level} Heading', style);
       expect(tester.getSize(find.byType(MarkdownBody)).height, tester.getSize(find.text('Heading')).height);
       await _pumpMarkdown(tester, '${'#' * level} Heading\n\nParagraph', style);
+      expect(tester.getTopLeft(find.text('Heading')).dy, tester.getTopLeft(find.byType(MarkdownBody)).dy);
       expect(_gap(tester, 'Heading', 'Paragraph'), 11);
     });
   }
@@ -122,15 +137,18 @@ void main() {
   test('new fields survive copying, merging, equality and hashing', () {
     final MarkdownStyleSheet base =
         MarkdownStyleSheet.fromTheme(ThemeData(textTheme: const TextTheme(bodyMedium: TextStyle(fontSize: 14))));
-    final MarkdownStyleSheet copy = base.copyWith(listItemSpacing: 7, headingSpacing: 11);
-    final MarkdownStyleSheet merged = base.merge(MarkdownStyleSheet(listItemSpacing: 7, headingSpacing: 11));
+    final MarkdownStyleSheet copy = base.copyWith(listItemSpacing: 7, headingSpacing: 11, headingBeforeSpacing: 31);
+    final MarkdownStyleSheet merged =
+        base.merge(MarkdownStyleSheet(listItemSpacing: 7, headingSpacing: 11, headingBeforeSpacing: 31));
     expect(copy, merged);
     expect(copy.hashCode, merged.hashCode);
     expect(copy.copyWith(listItemSpacing: 19), isNot(copy));
     expect(copy.copyWith(headingSpacing: 19), isNot(copy));
+    expect(copy.copyWith(headingBeforeSpacing: 19), isNot(copy));
     expect(copy.copyWith(), copy);
     expect(MarkdownStyleSheet().listItemSpacing, isNull);
     expect(MarkdownStyleSheet().headingSpacing, isNull);
+    expect(MarkdownStyleSheet().headingBeforeSpacing, isNull);
   });
 }
 

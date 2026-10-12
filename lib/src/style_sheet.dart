@@ -34,6 +34,7 @@ class MarkdownStyleSheet {
     this.blockSpacing,
     this.listItemSpacing,
     this.headingSpacing,
+    this.headingBeforeSpacing,
     this.listIndent,
     this.listBullet,
     this.listBulletPadding,
@@ -134,6 +135,7 @@ class MarkdownStyleSheet {
       blockSpacing: 12.0,
       listItemSpacing: 4.0,
       headingSpacing: 8.0,
+      headingBeforeSpacing: 24.0,
       listIndent: 24.0,
       listBullet: theme.textTheme.bodyMedium,
       listBulletPadding: const EdgeInsets.only(right: 4),
@@ -233,6 +235,7 @@ class MarkdownStyleSheet {
       blockSpacing: 12,
       listItemSpacing: 4,
       headingSpacing: 8,
+      headingBeforeSpacing: 24,
       listIndent: 24,
       listBullet: theme.textTheme.textStyle,
       listBulletPadding: const EdgeInsets.only(right: 4),
@@ -319,6 +322,7 @@ class MarkdownStyleSheet {
       blockSpacing: 12.0,
       listItemSpacing: 4.0,
       headingSpacing: 8.0,
+      headingBeforeSpacing: 24.0,
       listIndent: 24.0,
       listBullet: theme.textTheme.bodyMedium,
       listBulletPadding: const EdgeInsets.only(right: 4),
@@ -387,6 +391,7 @@ class MarkdownStyleSheet {
     double? blockSpacing,
     double? listItemSpacing,
     double? headingSpacing,
+    double? headingBeforeSpacing,
     double? listIndent,
     TextStyle? listBullet,
     EdgeInsets? listBulletPadding,
@@ -456,6 +461,7 @@ class MarkdownStyleSheet {
       blockSpacing: blockSpacing ?? this.blockSpacing,
       listItemSpacing: listItemSpacing ?? this.listItemSpacing,
       headingSpacing: headingSpacing ?? this.headingSpacing,
+      headingBeforeSpacing: headingBeforeSpacing ?? this.headingBeforeSpacing,
       listIndent: listIndent ?? this.listIndent,
       listBullet: listBullet ?? this.listBullet,
       listBulletPadding: listBulletPadding ?? this.listBulletPadding,
@@ -525,6 +531,7 @@ class MarkdownStyleSheet {
       blockSpacing: other.blockSpacing,
       listItemSpacing: other.listItemSpacing,
       headingSpacing: other.headingSpacing,
+      headingBeforeSpacing: other.headingBeforeSpacing,
       listIndent: other.listIndent,
       listBullet: listBullet!.merge(other.listBullet),
       listBulletPadding: other.listBulletPadding,
@@ -640,8 +647,14 @@ class MarkdownStyleSheet {
   final double? listItemSpacing;
 
   /// The vertical gap after a heading, falling back to [blockSpacing].
+  /// When another heading follows, [headingBeforeSpacing] takes precedence.
   /// Applies only when another block follows in the same parent.
   final double? headingSpacing;
+
+  /// The vertical gap before a heading, falling back to [blockSpacing].
+  /// Takes precedence over [headingSpacing] between consecutive headings.
+  /// No gap is inserted before the first block in a parent.
+  final double? headingBeforeSpacing;
 
   /// The amount of horizontal space to indent list items.
   final double? listIndent;
@@ -793,6 +806,7 @@ class MarkdownStyleSheet {
         other.blockSpacing == blockSpacing &&
         other.listItemSpacing == listItemSpacing &&
         other.headingSpacing == headingSpacing &&
+        other.headingBeforeSpacing == headingBeforeSpacing &&
         other.listIndent == listIndent &&
         other.listBullet == listBullet &&
         other.listBulletPadding == listBulletPadding &&
@@ -856,6 +870,7 @@ class MarkdownStyleSheet {
       blockSpacing,
       listItemSpacing,
       headingSpacing,
+      headingBeforeSpacing,
       listIndent,
       listBullet,
       listBulletPadding,

@@ -31,6 +31,8 @@ final List<String> _kBlockTags = <String>[
   'section',
 ];
 
+const List<String> _kHeadingTags = <String>['h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+
 const List<String> _kListTags = <String>['ul', 'ol'];
 
 bool _isBlockTag(String? tag) => _kBlockTags.contains(tag);
@@ -755,7 +757,9 @@ class MarkdownBuilder implements md.NodeVisitor {
       final double? spacing;
       if (_kListTags.contains(parent.tag) && parent.lastChildTag == 'li' && tag == 'li') {
         spacing = styleSheet.listItemSpacing ?? styleSheet.blockSpacing;
-      } else if (const <String>['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].contains(parent.lastChildTag)) {
+      } else if (_kHeadingTags.contains(tag)) {
+        spacing = styleSheet.headingBeforeSpacing ?? styleSheet.blockSpacing;
+      } else if (_kHeadingTags.contains(parent.lastChildTag)) {
         spacing = styleSheet.headingSpacing ?? styleSheet.blockSpacing;
       } else {
         spacing = styleSheet.blockSpacing;

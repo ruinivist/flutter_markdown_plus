@@ -295,14 +295,17 @@ through **All demos**.
 ### Block spacing
 
 Theme-based styles default to **12 px between blocks**, **4 px between sibling
-list items**, and **8 px after headings**. `MarkdownStyleSheet.listItemSpacing`
-and `headingSpacing` are optional; the builder uses `blockSpacing` when either
-is unset. Theme factories supply all three, and partial styles merge with those
-factory defaults. Set all three explicitly to use one uniform gap.
+list items**, **24 px before headings**, and **8 px after headings**.
+`MarkdownStyleSheet.listItemSpacing`, `headingSpacing`, and `headingBeforeSpacing`
+are optional; the builder uses `blockSpacing` when a value is unset. Theme factories supply all four, and partial styles merge with those
+factory defaults. Set all four explicitly to use one uniform gap.
 
 List item spacing applies to sibling items in ordered, unordered, nested and task
 lists. Wrapped lines retain their text line height, and paragraphs or nested
-blocks inside an item retain ordinary block spacing. Heading spacing applies
-between a heading and its next sibling block (including another heading), never
-before the first block or after the last. The preview exposes separate sliders
-for all three gaps; Reset spacing removes all temporary overrides.
+blocks inside an item retain ordinary block spacing. Before-heading spacing
+applies when a heading has a preceding sibling block;
+there is no leading gap for a heading at the start of a document, quote or list
+item. It takes precedence between consecutive headings, so gaps do not add up.
+After-heading spacing applies to the next non-heading sibling block. No spacing
+is appended after the last block. The preview exposes separate sliders
+for all four gaps; Reset spacing removes all temporary overrides.

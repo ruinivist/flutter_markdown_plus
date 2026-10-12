@@ -33,12 +33,19 @@ void main() {
         tester.widgetList<Slider>(find.byType(Slider)).toList();
     sliders[1].onChanged!(17);
     sliders[2].onChanged!(21);
+    sliders[3].onChanged!(29);
     await tester.pump();
     expect(
         tester.widget<MarkdownBody>(bodies.first).styleSheet!.listItemSpacing,
         17);
     expect(tester.widget<MarkdownBody>(bodies.first).styleSheet!.headingSpacing,
         21);
+    expect(
+        tester
+            .widget<MarkdownBody>(bodies.first)
+            .styleSheet!
+            .headingBeforeSpacing,
+        29);
     await tester.tap(find.text('Reset spacing'));
     await tester.pump();
     expect(tester.widget<MarkdownBody>(bodies.first).styleSheet!.blockSpacing,
@@ -49,6 +56,13 @@ void main() {
         defaults.listItemSpacing);
     expect(tester.widget<MarkdownBody>(bodies.first).styleSheet!.headingSpacing,
         defaults.headingSpacing);
+
+    expect(
+        tester
+            .widget<MarkdownBody>(bodies.first)
+            .styleSheet!
+            .headingBeforeSpacing,
+        defaults.headingBeforeSpacing);
 
     await tester.tap(find.text('Dark theme'));
     await tester.pumpAndSettle();

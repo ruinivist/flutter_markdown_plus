@@ -32,6 +32,7 @@ class _PlanePreviewState extends State<PlanePreview> {
   double? _blockSpacing;
   double? _listItemSpacing;
   double? _headingSpacing;
+  double? _headingBeforeSpacing;
 
   @override
   void initState() {
@@ -71,6 +72,7 @@ class _PlanePreviewState extends State<PlanePreview> {
           blockSpacing: _blockSpacing,
           listItemSpacing: _listItemSpacing,
           headingSpacing: _headingSpacing,
+          headingBeforeSpacing: _headingBeforeSpacing,
         );
         return Scaffold(
           appBar: AppBar(
@@ -105,6 +107,7 @@ class _PlanePreviewState extends State<PlanePreview> {
                             _blockSpacing = null;
                             _listItemSpacing = null;
                             _headingSpacing = null;
+                            _headingBeforeSpacing = null;
                           }),
                       child: const Text('Reset spacing')),
                 ],
@@ -120,10 +123,16 @@ class _PlanePreviewState extends State<PlanePreview> {
                   _listItemSpacing != null,
                   (double value) => setState(() => _listItemSpacing = value)),
               _spacingSlider(
-                  'Heading spacing',
+                  'After heading',
                   style.headingSpacing ?? style.blockSpacing!,
                   _headingSpacing != null,
                   (double value) => setState(() => _headingSpacing = value)),
+              _spacingSlider(
+                  'Before heading',
+                  style.headingBeforeSpacing ?? style.blockSpacing!,
+                  _headingBeforeSpacing != null,
+                  (double value) =>
+                      setState(() => _headingBeforeSpacing = value)),
               const SizedBox(height: 16),
               TextField(
                 controller: _source,
