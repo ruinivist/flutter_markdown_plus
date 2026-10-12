@@ -44,6 +44,7 @@ class _BlockElement {
   final List<Widget> children = <Widget>[];
 
   int nextListIndex = 0;
+  String? lastChildTag;
 }
 
 class _TableElement {
@@ -492,7 +493,7 @@ class MarkdownBuilder implements md.NodeVisitor {
         );
       }
 
-      _addBlockChild(child);
+      _addBlockChild(child, tag: tag);
     } else {
       final _InlineElement current = _inlines.removeLast();
       final _InlineElement parent = _inlines.last;
@@ -748,12 +749,21 @@ class MarkdownBuilder implements md.NodeVisitor {
     }
   }
 
-  void _addBlockChild(Widget child) {
+  void _addBlockChild(Widget child, {String? tag}) {
     final _BlockElement parent = _blocks.last;
     if (parent.children.isNotEmpty) {
-      parent.children.add(SizedBox(height: styleSheet.blockSpacing));
+      final double? spacing;
+      if (_kListTags.contains(parent.tag) && parent.lastChildTag == 'li' && tag == 'li') {
+        spacing = styleSheet.listItemSpacing ?? styleSheet.blockSpacing;
+      } else if (const <String>['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].contains(parent.lastChildTag)) {
+        spacing = styleSheet.headingSpacing ?? styleSheet.blockSpacing;
+      } else {
+        spacing = styleSheet.blockSpacing;
+      }
+      parent.children.add(SizedBox(height: spacing));
     }
     parent.children.add(child);
+    parent.lastChildTag = tag;
     parent.nextListIndex += 1;
   }
 

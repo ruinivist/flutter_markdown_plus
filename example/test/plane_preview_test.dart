@@ -15,6 +15,8 @@ void main() {
     await tester.pumpWidget(const PlanePreview());
     await tester.pumpAndSettle();
     final Finder bodies = find.byType(MarkdownBody);
+    final MarkdownStyleSheet defaults =
+        tester.widget<MarkdownBody>(bodies.first).styleSheet!;
     final double defaultSpacing =
         tester.widget<MarkdownBody>(bodies.first).styleSheet!.blockSpacing!;
 
@@ -27,10 +29,26 @@ void main() {
     await tester.pump();
     expect(
         tester.widget<MarkdownBody>(bodies.first).styleSheet!.blockSpacing, 19);
+    final List<Slider> sliders =
+        tester.widgetList<Slider>(find.byType(Slider)).toList();
+    sliders[1].onChanged!(17);
+    sliders[2].onChanged!(21);
+    await tester.pump();
+    expect(
+        tester.widget<MarkdownBody>(bodies.first).styleSheet!.listItemSpacing,
+        17);
+    expect(tester.widget<MarkdownBody>(bodies.first).styleSheet!.headingSpacing,
+        21);
     await tester.tap(find.text('Reset spacing'));
     await tester.pump();
     expect(tester.widget<MarkdownBody>(bodies.first).styleSheet!.blockSpacing,
         defaultSpacing);
+
+    expect(
+        tester.widget<MarkdownBody>(bodies.first).styleSheet!.listItemSpacing,
+        defaults.listItemSpacing);
+    expect(tester.widget<MarkdownBody>(bodies.first).styleSheet!.headingSpacing,
+        defaults.headingSpacing);
 
     await tester.tap(find.text('Dark theme'));
     await tester.pumpAndSettle();

@@ -32,6 +32,8 @@ class MarkdownStyleSheet {
     this.img,
     this.checkbox,
     this.blockSpacing,
+    this.listItemSpacing,
+    this.headingSpacing,
     this.listIndent,
     this.listBullet,
     this.listBulletPadding,
@@ -129,7 +131,9 @@ class MarkdownStyleSheet {
       checkbox: theme.textTheme.bodyMedium!.copyWith(
         color: theme.primaryColor,
       ),
-      blockSpacing: 8.0,
+      blockSpacing: 12.0,
+      listItemSpacing: 4.0,
+      headingSpacing: 8.0,
       listIndent: 24.0,
       listBullet: theme.textTheme.bodyMedium,
       listBulletPadding: const EdgeInsets.only(right: 4),
@@ -226,7 +230,9 @@ class MarkdownStyleSheet {
       checkbox: theme.textTheme.textStyle.copyWith(
         color: theme.primaryColor,
       ),
-      blockSpacing: 8,
+      blockSpacing: 12,
+      listItemSpacing: 4,
+      headingSpacing: 8,
       listIndent: 24,
       listBullet: theme.textTheme.textStyle,
       listBulletPadding: const EdgeInsets.only(right: 4),
@@ -310,7 +316,9 @@ class MarkdownStyleSheet {
       checkbox: theme.textTheme.bodyMedium!.copyWith(
         color: theme.primaryColor,
       ),
-      blockSpacing: 8.0,
+      blockSpacing: 12.0,
+      listItemSpacing: 4.0,
+      headingSpacing: 8.0,
       listIndent: 24.0,
       listBullet: theme.textTheme.bodyMedium,
       listBulletPadding: const EdgeInsets.only(right: 4),
@@ -377,6 +385,8 @@ class MarkdownStyleSheet {
     TextStyle? img,
     TextStyle? checkbox,
     double? blockSpacing,
+    double? listItemSpacing,
+    double? headingSpacing,
     double? listIndent,
     TextStyle? listBullet,
     EdgeInsets? listBulletPadding,
@@ -444,6 +454,8 @@ class MarkdownStyleSheet {
       img: img ?? this.img,
       checkbox: checkbox ?? this.checkbox,
       blockSpacing: blockSpacing ?? this.blockSpacing,
+      listItemSpacing: listItemSpacing ?? this.listItemSpacing,
+      headingSpacing: headingSpacing ?? this.headingSpacing,
       listIndent: listIndent ?? this.listIndent,
       listBullet: listBullet ?? this.listBullet,
       listBulletPadding: listBulletPadding ?? this.listBulletPadding,
@@ -511,6 +523,8 @@ class MarkdownStyleSheet {
       img: img!.merge(other.img),
       checkbox: checkbox!.merge(other.checkbox),
       blockSpacing: other.blockSpacing,
+      listItemSpacing: other.listItemSpacing,
+      headingSpacing: other.headingSpacing,
       listIndent: other.listIndent,
       listBullet: listBullet!.merge(other.listBullet),
       listBulletPadding: other.listBulletPadding,
@@ -620,6 +634,14 @@ class MarkdownStyleSheet {
 
   /// The amount of vertical space to use between block-level elements.
   final double? blockSpacing;
+
+  /// The vertical gap between sibling list items, falling back to [blockSpacing].
+  /// Does not change wrapped lines or paragraphs inside an item.
+  final double? listItemSpacing;
+
+  /// The vertical gap after a heading, falling back to [blockSpacing].
+  /// Applies only when another block follows in the same parent.
+  final double? headingSpacing;
 
   /// The amount of horizontal space to indent list items.
   final double? listIndent;
@@ -769,6 +791,8 @@ class MarkdownStyleSheet {
         other.img == img &&
         other.checkbox == checkbox &&
         other.blockSpacing == blockSpacing &&
+        other.listItemSpacing == listItemSpacing &&
+        other.headingSpacing == headingSpacing &&
         other.listIndent == listIndent &&
         other.listBullet == listBullet &&
         other.listBulletPadding == listBulletPadding &&
@@ -830,6 +854,8 @@ class MarkdownStyleSheet {
       img,
       checkbox,
       blockSpacing,
+      listItemSpacing,
+      headingSpacing,
       listIndent,
       listBullet,
       listBulletPadding,

@@ -30,6 +30,8 @@ class _PlanePreviewState extends State<PlanePreview> {
   bool _dark = false;
   bool _narrow = false;
   double? _blockSpacing;
+  double? _listItemSpacing;
+  double? _headingSpacing;
 
   @override
   void initState() {
@@ -65,8 +67,11 @@ class _PlanePreviewState extends State<PlanePreview> {
       theme: theme,
       home: Builder(builder: (BuildContext context) {
         final MarkdownStyleSheet defaults = _planeStyle(theme);
-        final MarkdownStyleSheet style =
-            defaults.copyWith(blockSpacing: _blockSpacing);
+        final MarkdownStyleSheet style = defaults.copyWith(
+          blockSpacing: _blockSpacing,
+          listItemSpacing: _listItemSpacing,
+          headingSpacing: _headingSpacing,
+        );
         return Scaffold(
           appBar: AppBar(
             title: const Text('Plane Markdown preview'),
@@ -96,7 +101,11 @@ class _PlanePreviewState extends State<PlanePreview> {
                       onSelected: (bool value) =>
                           setState(() => _narrow = value)),
                   TextButton(
-                      onPressed: () => setState(() => _blockSpacing = null),
+                      onPressed: () => setState(() {
+                            _blockSpacing = null;
+                            _listItemSpacing = null;
+                            _headingSpacing = null;
+                          }),
                       child: const Text('Reset spacing')),
                 ],
               ),
@@ -105,6 +114,16 @@ class _PlanePreviewState extends State<PlanePreview> {
                   style.blockSpacing!,
                   _blockSpacing != null,
                   (double value) => setState(() => _blockSpacing = value)),
+              _spacingSlider(
+                  'List item spacing',
+                  style.listItemSpacing ?? style.blockSpacing!,
+                  _listItemSpacing != null,
+                  (double value) => setState(() => _listItemSpacing = value)),
+              _spacingSlider(
+                  'Heading spacing',
+                  style.headingSpacing ?? style.blockSpacing!,
+                  _headingSpacing != null,
+                  (double value) => setState(() => _headingSpacing = value)),
               const SizedBox(height: 16),
               TextField(
                 controller: _source,

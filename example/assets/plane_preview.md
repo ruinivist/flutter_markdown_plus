@@ -18,6 +18,7 @@ Another paragraph tests ordinary block spacing. Resize the card to see how the s
 - [x] Completed task
 - [ ] Task with enough text to wrap onto multiple lines in the narrow card without extra gaps between those lines.
 
+### Paragraphs within list items
 - A loose list item.
 
   Another paragraph in that same item.
