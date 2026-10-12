@@ -276,3 +276,18 @@ Here are some additional Markdown syntax resources:
 ## Maintainers
 
 This package is proudly maintained by [Gareth Reese](https://github.com/gazreese) and [Marko Radisavljevic](https://github.com/Prototypev1) for [Foresight Mobile](https://foresightmobile.com/) ([GitHub](https://github.com/foresightmobile/))
+
+## Plane comparison preview
+
+Run `make preview` from the repository root (Flutter and `/usr/bin/chromium`
+required), then open <http://localhost:7357>. This launches the existing example
+app's dedicated Plane preview with Flutter hot reload (`r` reloads, `R` restarts).
+The renderer and the LaTeX extension both resolve to the local package.
+
+Edit Markdown live, compare the bundled Plane sample with the original example,
+switch light/dark themes and 320/640 px card widths, and adjust block spacing.
+Reset spacing removes temporary overrides and restores the renderer's defaults.
+The bundled JetBrains Mono fonts, 24 px padding, palette and typography mirror
+Plane's `lib/theme/starless.dart` and `text_markdown_preview.dart`; keep them in
+sync when Plane's visual defaults change. The existing demos remain available
+through **All demos**.
