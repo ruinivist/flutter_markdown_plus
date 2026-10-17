@@ -1,3 +1,7 @@
+## Unreleased
+
+* **Breaking:** `SyntaxHighlighter.format` and `MarkdownBuilderDelegate.formatText` now accept an optional named `{String? language}` parameter. Update existing overrides to match. Fenced code blocks forward their declared language; unlabeled fenced blocks and indented code blocks pass null. Inline code is unchanged.
+
 ## 1.0.12
 
 * Added golden render regression tests for the Markdown widgets, covering text formatting, emphasis, blockquotes, lists, tables, task lists, and code blocks. They render with real fonts and run in the local `flutter test` suite; like the existing image goldens they are platform-specific, and are skipped on CI (whose Flutter `stable` channel is unpinned) to avoid flaky pixel-exact diffs when the toolchain drifts

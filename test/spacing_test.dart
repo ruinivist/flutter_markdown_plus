@@ -164,5 +164,6 @@ class _TestDelegate implements MarkdownBuilderDelegate {
   GestureRecognizer createLink(String text, String? href, String title) => TapGestureRecognizer();
 
   @override
-  TextSpan formatText(MarkdownStyleSheet styleSheet, String code) => TextSpan(text: code, style: styleSheet.code);
+  TextSpan formatText(MarkdownStyleSheet styleSheet, String code, {String? language}) =>
+      TextSpan(text: code, style: styleSheet.code);
 }

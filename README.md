@@ -135,6 +135,33 @@ To render inside an existing scroll view (for example a `CustomScrollView` or a
 `Column` in a `SingleChildScrollView`), use `Markdown` with `noScroll: true` so it
 lays out as a non-scrolling `Column` instead of managing its own scrolling.
 
+## Syntax highlighting
+
+Supply a `SyntaxHighlighter` to `Markdown` or `MarkdownBody` to format code
+blocks. Its `format` method receives the source and the language declared by
+the fence: a block starting with \`\`\`python passes `language: 'python'`.
+Unlabeled fenced blocks and indented code blocks pass null. Inline backtick
+snippets do not call the highlighter.
+
+<?code-excerpt "example/lib/readme_excerpts.dart (SyntaxHighlighter)"?>
+```dart
+class AppSyntaxHighlighter implements SyntaxHighlighter {
+  @override
+  TextSpan format(String source, {String? language}) {
+    // Use language to select your app's highlighting rules and theme.
+    return TextSpan(text: source);
+  }
+}
+```
+
+Pass an instance with `syntaxHighlighter: AppSyntaxHighlighter()`. This example
+returns plain text; your app supplies the highlighting engine and theme.
+The source has one trailing newline removed before highlighting. Without a
+highlighter, code blocks use `MarkdownStyleSheet.code`.
+
+Existing highlighter overrides must add the `{String? language}` parameter.
+Custom `MarkdownBuilderDelegate.formatText` overrides must add it too.
+
 ## Handling Links
 
 Markdown links are not followed automatically — you decide what a tap does.

@@ -12,6 +12,64 @@ import 'utils.dart';
 void main() => defineTests();
 
 void defineTests() {
+  group('Syntax highlighter', () {
+    for (final bool selectable in <bool>[false, true]) {
+      final List<(String, String, List<(String, String?)>)> cases = <(String, String, List<(String, String?)>)>[
+        (
+          'each labeled block receives its language',
+          '```python\nprint("hello")\n```\n\n```dart\nprint("hi");\n```',
+          <(String, String?)>[('print("hello")', 'python'), ('print("hi");', 'dart')],
+        ),
+        (
+          'unlabeled block after a labeled block receives null',
+          '```python\nlabeled\n```\n\n```\nunlabeled\n```',
+          <(String, String?)>[('labeled', 'python'), ('unlabeled', null)],
+        ),
+        (
+          'indented code after a labeled block receives null',
+          '```python\nlabeled\n```\n\n    indented',
+          <(String, String?)>[('labeled', 'python'), ('indented', null)],
+        ),
+        (
+          'inline code does not invoke the block highlighter',
+          '`inline`',
+          <(String, String?)>[],
+        ),
+        (
+          'only one trailing newline is removed',
+          '```python\nfirst\nsecond\n\n```',
+          <(String, String?)>[('first\nsecond\n', 'python')],
+        ),
+      ];
+
+      for (final (String name, String data, List<(String, String?)> expected) in cases) {
+        testWidgets('$name (selectable: $selectable)', (WidgetTester tester) async {
+          final _RecordingSyntaxHighlighter highlighter = _RecordingSyntaxHighlighter();
+          await tester.pumpWidget(boilerplate(MarkdownBody(
+            data: data,
+            selectable: selectable,
+            syntaxHighlighter: highlighter,
+          )));
+
+          expect(highlighter.calls, expected);
+          expect(find.byType(selectable ? SelectableText : Text), findsNWidgets(expected.isEmpty ? 1 : expected.length));
+          expectTextStrings(
+              tester.allWidgets, expected.isEmpty ? <String>['inline'] : expected.map((e) => e.$1).toList());
+        });
+      }
+
+      testWidgets('code renders without a highlighter (selectable: $selectable)', (WidgetTester tester) async {
+        await tester.pumpWidget(boilerplate(MarkdownBody(
+          data: '```python\nlabeled\n```\n\n```\nunlabeled\n```\n\n    indented\n\n`inline`',
+          selectable: selectable,
+        )));
+
+        expect(find.byType(selectable ? SelectableText : Text), findsNWidgets(4));
+        expectTextStrings(tester.allWidgets, <String>['labeled', 'unlabeled', 'indented', 'inline']);
+      });
+    }
+  });
+
   group('Data', () {
     testWidgets(
       'simple data',
@@ -473,4 +531,14 @@ void defineTests() {
       },
     );
   });
+}
+
+class _RecordingSyntaxHighlighter implements SyntaxHighlighter {
+  final List<(String, String?)> calls = <(String, String?)>[];
+
+  @override
+  TextSpan format(String source, {String? language}) {
+    calls.add((source, language));
+    return TextSpan(text: source);
+  }
 }

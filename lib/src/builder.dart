@@ -47,6 +47,7 @@ class _BlockElement {
 
   int nextListIndex = 0;
   String? lastChildTag;
+  String? language;
 }
 
 class _TableElement {
@@ -93,7 +94,9 @@ abstract class MarkdownBuilderDelegate {
   /// element.
   ///
   /// The `styleSheet` is the value of [MarkdownBuilder.styleSheet].
-  TextSpan formatText(MarkdownStyleSheet styleSheet, String code);
+  /// The [language] is the fenced code block's language, or null for unlabeled
+  /// fenced blocks and indented code blocks.
+  TextSpan formatText(MarkdownStyleSheet styleSheet, String code, {String? language});
 }
 
 /// Builds a [Widget] tree from parsed Markdown.
@@ -288,6 +291,12 @@ class MarkdownBuilder implements md.NodeVisitor {
 
       _addParentInlineIfNeeded(_blocks.last.tag);
 
+      if (tag == 'code' && _blocks.last.tag == 'pre') {
+        final String? codeClass = element.attributes['class'];
+        _blocks.last.language =
+            codeClass != null && codeClass.startsWith('language-') ? codeClass.substring('language-'.length) : null;
+      }
+
       // The Markdown parser passes empty table data tags for blank
       // table cells. Insert a text node with an empty string in this
       // case for the table cell to get properly created.
@@ -363,7 +372,7 @@ class MarkdownBuilder implements md.NodeVisitor {
               ),
             );
           },
-          child: _buildRichText(delegate.formatText(styleSheet, text.text)));
+          child: _buildRichText(delegate.formatText(styleSheet, text.text, language: _blocks.last.language)));
     } else {
       child = _buildRichText(
         TextSpan(

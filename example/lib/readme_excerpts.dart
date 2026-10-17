@@ -9,6 +9,17 @@ import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:markdown/markdown.dart' as md;
 // #enddocregion CreateMarkdownWithEmojiExtension
 
+/// Replace the plain text result with your app's syntax highlighting.
+// #docregion SyntaxHighlighter
+class AppSyntaxHighlighter implements SyntaxHighlighter {
+  @override
+  TextSpan format(String source, {String? language}) {
+    // Use language to select your app's highlighting rules and theme.
+    return TextSpan(text: source);
+  }
+}
+// #enddocregion SyntaxHighlighter
+
 /// Create a simple `Markdown` wdget.
 void createMarkdown() {
   const String markdownSource = '';

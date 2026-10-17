@@ -86,7 +86,11 @@ enum BulletStyle {
 abstract class SyntaxHighlighter {
   // ignore: one_member_abstracts
   /// Returns the formatted [TextSpan] for the given string.
-  TextSpan format(String source);
+  ///
+  /// [language] is the language declared by the fenced code block, or null for
+  /// unlabeled fenced blocks and indented code blocks. Inline code does not
+  /// invoke this method. One trailing newline is removed from [source].
+  TextSpan format(String source, {String? language});
 }
 
 /// An interface for an element builder.
@@ -247,6 +251,9 @@ abstract class MarkdownWidget extends StatefulWidget {
   final MarkdownStyleSheetBaseTheme? styleSheetTheme;
 
   /// The syntax highlighter used to color text in `pre` elements.
+  ///
+  /// Receives the declared fenced code language, or null for unlabeled fenced
+  /// blocks and indented code blocks. Inline code is styled separately.
   ///
   /// If null, the [MarkdownStyleSheet.code] style is used for `pre` elements.
   final SyntaxHighlighter? syntaxHighlighter;
@@ -438,10 +445,10 @@ class _MarkdownWidgetState extends State<MarkdownWidget> implements MarkdownBuil
   }
 
   @override
-  TextSpan formatText(MarkdownStyleSheet styleSheet, String code) {
+  TextSpan formatText(MarkdownStyleSheet styleSheet, String code, {String? language}) {
     code = code.replaceAll(RegExp(r'\n$'), '');
     if (widget.syntaxHighlighter != null) {
-      return widget.syntaxHighlighter!.format(code);
+      return widget.syntaxHighlighter!.format(code, language: language);
     }
     return TextSpan(style: styleSheet.code, text: code);
   }
