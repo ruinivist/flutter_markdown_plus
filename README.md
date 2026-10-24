@@ -33,6 +33,25 @@ Math inherits the surrounding text style. Override it with `MarkdownStyleSheet(l
 
 Escaped delimiters and code remain literal. Single-dollar math cannot begin or end with whitespace, and its closing dollar cannot be followed immediately by a digit, so common currency text such as `$300 $400` stays literal. Unmatched fences do not consume the remaining document.
 
+To parse Markdown directly with the renderer's math rules, import the widget-free `latex.dart` entry point and append its syntaxes after your Markdown extensions:
+
+```dart
+import 'package:flutter_markdown_plus/latex.dart';
+import 'package:markdown/markdown.dart' as md;
+
+final gfm = md.ExtensionSet.gitHubFlavored;
+final document = md.Document(
+  extensionSet: md.ExtensionSet(
+    [...gfm.blockSyntaxes, const LatexBlockSyntax()],
+    [...gfm.inlineSyntaxes, LatexInlineSyntax()],
+  ),
+  encodeHtml: false,
+);
+final nodes = document.parse(source);
+```
+
+Math contents remain literal in `latex` elements instead of becoming Markdown links or images.
+
 To migrate from `flutter_markdown_plus_latex`, remove that dependency and its import, the `LatexBlockSyntax` and `LatexInlineSyntax` registrations, and the `LatexElementBuilder` entry. Move its `textStyle` to `MarkdownStyleSheet.latex` and use the sheet's `textScaler` for scaling. The old bare spaced bracket/parenthesis aliases, standalone chemistry delimiters, and single-dollar multiline blocks are not supported. Custom syntaxes still take precedence, and `builders['latex']` can replace the built-in rendering.
 
 ## Features
