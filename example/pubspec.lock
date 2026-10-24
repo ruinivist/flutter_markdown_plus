@@ -158,7 +158,7 @@ packages:
     description:
       path: "pkgs/markdown"
       ref: main
-      resolved-ref: "573607b7bad544c6b3074daca6f53782e016c2b3"
+      resolved-ref: ca44b085ca8e25b62ce0f8b8b9e172145412a7b0
       url: "https://github.com/ruinivist/dart-tools.git"
     source: git
     version: "7.4.1-wip"
