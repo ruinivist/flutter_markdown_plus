@@ -1,16 +1,20 @@
 // Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+// LaTeX rendering is adapted from flutter_markdown_plus_latex (Apache-2.0).
+// Integration and styling have been modified; see LICENSE.latex.
 
 import 'dart:convert';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:markdown/markdown.dart' as md;
 
 import '../flutter_markdown_plus.dart';
 import '_functions_io.dart' if (dart.library.js_interop) '_functions_web.dart';
+import 'latex_syntax.dart';
 
 /// Signature for callbacks used by [MarkdownWidget] when
 /// [MarkdownWidget.selectable] is set to true and the user changes selection.
@@ -232,7 +236,7 @@ abstract class MarkdownWidget extends StatefulWidget {
     this.softLineBreak = false,
   });
 
-  /// The Markdown to display.
+  /// The Markdown to display, including inline and display LaTeX math.
   final String data;
 
   /// If true, the text is selectable.
@@ -384,13 +388,17 @@ class _MarkdownWidgetState extends State<MarkdownWidget> implements MarkdownBuil
   void _parseMarkdown() {
     final MarkdownStyleSheet fallbackStyleSheet = kFallbackStyle(context, widget.styleSheetTheme);
     final MarkdownStyleSheet styleSheet = fallbackStyleSheet.merge(widget.styleSheet);
+    final md.ExtensionSet extensionSet = widget.extensionSet ?? md.ExtensionSet.gitHubFlavored;
 
     _disposeRecognizers();
 
     final md.Document document = md.Document(
       blockSyntaxes: widget.blockSyntaxes,
       inlineSyntaxes: widget.inlineSyntaxes,
-      extensionSet: widget.extensionSet ?? md.ExtensionSet.gitHubFlavored,
+      extensionSet: md.ExtensionSet(
+        <md.BlockSyntax>[...extensionSet.blockSyntaxes, const LatexBlockSyntax()],
+        <md.InlineSyntax>[...extensionSet.inlineSyntaxes, LatexInlineSyntax()],
+      ),
       encodeHtml: false,
     );
 
@@ -408,7 +416,10 @@ class _MarkdownWidgetState extends State<MarkdownWidget> implements MarkdownBuil
       imageBuilder: widget.imageBuilder,
       checkboxBuilder: widget.checkboxBuilder,
       bulletBuilder: widget.bulletBuilder,
-      builders: widget.builders,
+      builders: <String, MarkdownElementBuilder>{
+        'latex': _LatexElementBuilder(styleSheet),
+        ...widget.builders,
+      },
       paddingBuilders: widget.paddingBuilders,
       fitContent: widget.fitContent,
       listItemCrossAxisAlignment: widget.listItemCrossAxisAlignment,
@@ -455,6 +466,50 @@ class _MarkdownWidgetState extends State<MarkdownWidget> implements MarkdownBuil
 
   @override
   Widget build(BuildContext context) => widget.build(context, _children);
+}
+
+class _LatexElementBuilder extends MarkdownElementBuilder {
+  _LatexElementBuilder(this.styleSheet);
+
+  final MarkdownStyleSheet styleSheet;
+
+  @override
+  Widget visitElementAfterWithContext(
+    BuildContext context,
+    md.Element element,
+    TextStyle? preferredStyle,
+    TextStyle? parentStyle,
+  ) {
+    final String source = element.textContent;
+    if (source.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    TextStyle style = (parentStyle ?? styleSheet.p)!.merge(preferredStyle);
+    if (style.inherit) {
+      style = DefaultTextStyle.of(context).style.merge(style);
+    }
+    final double fontSize = styleSheet.textScaler!.scale(style.fontSize ?? kDefaultFontSize);
+    final Color color = style.foreground?.color ?? style.color ?? Colors.white;
+    final FontWeight? weight = MediaQuery.boldTextOf(context) ? FontWeight.bold : style.fontWeight;
+    final MathStyle mathStyle = element.attributes['MathStyle'] == 'display' ? MathStyle.display : MathStyle.text;
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      clipBehavior: Clip.antiAlias,
+      child: Math.tex(
+        source,
+        mathStyle: mathStyle,
+        textStyle: style.copyWith(fontSize: fontSize, color: color),
+        textScaleFactor: 1,
+        // Math.tex cannot resolve TextStyle.foreground into its required color.
+        options: MathOptions(
+          style: mathStyle,
+          fontSize: fontSize,
+          color: color,
+          mathFontOptions: weight == null || weight == FontWeight.normal ? null : FontOptions(fontWeight: weight),
+        ),
+      ),
+    );
+  }
 }
 
 /// A non-scrolling widget that parses and displays Markdown.

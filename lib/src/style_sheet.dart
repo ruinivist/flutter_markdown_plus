@@ -13,6 +13,7 @@ class MarkdownStyleSheet {
     this.p,
     this.pPadding,
     this.code,
+    this.latex,
     this.h1,
     this.h1Padding,
     this.h2,
@@ -82,6 +83,7 @@ class MarkdownStyleSheet {
           'p': p,
           'li': p,
           'code': code,
+          'latex': latex,
           'pre': p,
           'h1': h1,
           'h2': h2,
@@ -370,6 +372,7 @@ class MarkdownStyleSheet {
     TextStyle? p,
     EdgeInsets? pPadding,
     TextStyle? code,
+    TextStyle? latex,
     TextStyle? h1,
     EdgeInsets? h1Padding,
     TextStyle? h2,
@@ -440,6 +443,7 @@ class MarkdownStyleSheet {
       p: p ?? this.p,
       pPadding: pPadding ?? this.pPadding,
       code: code ?? this.code,
+      latex: latex ?? this.latex,
       h1: h1 ?? this.h1,
       h1Padding: h1Padding ?? this.h1Padding,
       h2: h2 ?? this.h2,
@@ -510,6 +514,7 @@ class MarkdownStyleSheet {
       p: p!.merge(other.p),
       pPadding: other.pPadding,
       code: code!.merge(other.code),
+      latex: latex?.merge(other.latex) ?? other.latex,
       h1: h1!.merge(other.h1),
       h1Padding: other.h1Padding,
       h2: h2!.merge(other.h2),
@@ -584,6 +589,9 @@ class MarkdownStyleSheet {
 
   /// The [TextStyle] to use for `code` elements.
   final TextStyle? code;
+
+  /// The style applied over the surrounding text style when rendering LaTeX.
+  final TextStyle? latex;
 
   /// The [TextStyle] to use for `h1` elements.
   final TextStyle? h1;
@@ -785,6 +793,7 @@ class MarkdownStyleSheet {
         other.p == p &&
         other.pPadding == pPadding &&
         other.code == code &&
+        other.latex == latex &&
         other.h1 == h1 &&
         other.h1Padding == h1Padding &&
         other.h2 == h2 &&
@@ -849,6 +858,7 @@ class MarkdownStyleSheet {
       p,
       pPadding,
       code,
+      latex,
       h1,
       h1Padding,
       h2,

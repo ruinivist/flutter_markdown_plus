@@ -17,7 +17,23 @@ The package is **actively maintained**: bug reports are triaged against the curr
 
 For historical context, see the [original flutter_markdown package](https://pub.dev/packages/flutter_markdown).
 
-**LaTeX Support:** For LaTeX rendering support, check out the [`flutter_markdown_plus_latex`](https://pub.dev/packages/flutter_markdown_plus_latex) package.
+### LaTeX
+
+`Markdown` and `MarkdownBody` render LaTeX through `flutter_math_fork` by default, including when you supply an `extensionSet`. No separate extension package or syntax registration is required.
+
+Use `$x^2$` or `\(x^2\)` for inline math, and `$$x^2$$` or `\[x^2\]` for display-style math. Display fences also support multiple lines:
+
+```text
+$$
+a^2 + b^2 = c^2
+$$
+```
+
+Math inherits the surrounding text style. Override it with `MarkdownStyleSheet(latex: TextStyle(...))`; the sheet's `textScaler` also applies. Wide equations scroll horizontally, and invalid TeX uses the math renderer's error fallback. Equations use the renderer's built-in math fonts and are not selectable.
+
+Escaped delimiters and code remain literal. Single-dollar math cannot begin or end with whitespace, and its closing dollar cannot be followed immediately by a digit, so common currency text such as `$300 $400` stays literal. Unmatched fences do not consume the remaining document.
+
+To migrate from `flutter_markdown_plus_latex`, remove that dependency and its import, the `LatexBlockSyntax` and `LatexInlineSyntax` registrations, and the `LatexElementBuilder` entry. Move its `textStyle` to `MarkdownStyleSheet.latex` and use the sheet's `textScaler` for scaling. The old bare spaced bracket/parenthesis aliases, standalone chemistry delimiters, and single-dollar multiline blocks are not supported. Custom syntaxes still take precedence, and `builders['latex']` can replace the built-in rendering.
 
 ## Features
 

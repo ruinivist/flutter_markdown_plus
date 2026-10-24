@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
-import 'package:flutter_markdown_plus_latex/flutter_markdown_plus_latex.dart';
 
 import 'screens/home_screen.dart';
 
@@ -196,11 +195,6 @@ class _PlanePreviewState extends State<PlanePreview> {
               child: MarkdownBody(
                 data: data,
                 styleSheet: style,
-                blockSyntaxes: <LatexBlockSyntax>[LatexBlockSyntax()],
-                inlineSyntaxes: <LatexInlineSyntax>[LatexInlineSyntax()],
-                builders: <String, MarkdownElementBuilder>{
-                  'latex': LatexElementBuilder(textStyle: style.p!)
-                },
                 imageBuilder: (Uri uri, String? title, String? alt) =>
                     uri.scheme == 'resource'
                         ? Image.asset(uri.path, semanticLabel: alt, width: 96)

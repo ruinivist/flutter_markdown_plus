@@ -14,10 +14,6 @@ dependencies:
 
   flutter_markdown_plus:
     path: ../
-#  flutter_markdown_plus_latex:
-#    path: ../../flutter_markdown_plus_latex   # For relative path testing
-
-  flutter_markdown_plus_latex: ^1.0.5
   markdown: ^7.3.0
 
 

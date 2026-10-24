@@ -528,7 +528,7 @@ class MarkdownBuilder implements md.NodeVisitor {
           // through to the parent and render twice. See issue #132.
           current.children
             ..clear()
-            ..add(child);
+            ..add(_buildLink(child));
         }
       } else if (tag == 'img') {
         // create an image widget for this image
@@ -655,6 +655,10 @@ class MarkdownBuilder implements md.NodeVisitor {
       child = kDefaultImageBuilder(uri, imageDirectory, width, height);
     }
 
+    return _buildLink(child);
+  }
+
+  Widget _buildLink(Widget child) {
     if (_linkHandlers.isNotEmpty) {
       final TapGestureRecognizer recognizer = _linkHandlers.last as TapGestureRecognizer;
       return GestureDetector(onTap: recognizer.onTap, child: child);

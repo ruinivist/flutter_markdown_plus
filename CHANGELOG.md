@@ -1,5 +1,7 @@
 ## Unreleased
 
+* Added built-in LaTeX rendering to `Markdown` and `MarkdownBody` using `flutter_math_fork`. Supports `$…$`, `$$…$$`, `\(…\)`, and `\[…\]`, including multiline display fences, with styling through `MarkdownStyleSheet.latex` and the existing `textScaler`.
+* Removed the example's dependency on `flutter_markdown_plus_latex`. Callers migrating from that extension should remove its syntax and builder registrations; its nonstandard delimiter aliases are not included.
 * **Breaking:** `SyntaxHighlighter.format` and `MarkdownBuilderDelegate.formatText` now accept an optional named `{String? language}` parameter. Update existing overrides to match. Fenced code blocks forward their declared language; unlabeled fenced blocks and indented code blocks pass null. Inline code is unchanged.
 
 ## 1.0.12
