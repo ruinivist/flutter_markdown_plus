@@ -68,11 +68,7 @@ void main() {
       initialRoute: '/',
       home: HomeScreen(),
       onGenerateRoute: (RouteSettings settings) {
-        return MaterialPageRoute<void>(
-          builder: (_) => DemoScreen(
-            child: settings.arguments as MarkdownDemoWidget?,
-          ),
-        );
+        return MaterialPageRoute<void>(builder: (_) => DemoScreen(child: settings.arguments as MarkdownDemoWidget?));
       },
     ),
   );

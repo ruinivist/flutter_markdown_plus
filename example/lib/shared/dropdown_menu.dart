@@ -18,11 +18,11 @@ class DropdownMenu<T> extends StatelessWidget {
     Color? menuItemBackground,
     EdgeInsetsGeometry? menuItemMargin,
     this.onChanged,
-  })  : assert(items.isNotEmpty, 'The items map must contain at least one entry'),
-        background = background ?? Colors.black12,
-        padding = padding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        menuItemBackground = menuItemBackground ?? Colors.white,
-        menuItemMargin = menuItemMargin ?? const EdgeInsets.only(left: 4);
+  }) : assert(items.isNotEmpty, 'The items map must contain at least one entry'),
+       background = background ?? Colors.black12,
+       padding = padding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+       menuItemBackground = menuItemBackground ?? Colors.white,
+       menuItemMargin = menuItemMargin ?? const EdgeInsets.only(left: 4);
 
   final Map<String, T> items;
 
@@ -49,10 +49,7 @@ class DropdownMenu<T> extends StatelessWidget {
       padding: padding,
       child: Row(
         children: <Widget>[
-          Text(
-            label,
-            style: labelStyle ?? Theme.of(context).textTheme.titleMedium,
-          ),
+          Text(label, style: labelStyle ?? Theme.of(context).textTheme.titleMedium),
           Container(
             color: menuItemBackground,
             margin: menuItemMargin,
@@ -63,10 +60,7 @@ class DropdownMenu<T> extends StatelessWidget {
                 for (final String item in items.keys)
                   DropdownMenuItem<T>(
                     value: items[item],
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 4),
-                      child: Text(item),
-                    ),
+                    child: Container(padding: const EdgeInsets.only(left: 4), child: Text(item)),
                   ),
               ],
               onChanged: (T? value) => onChanged!(value),

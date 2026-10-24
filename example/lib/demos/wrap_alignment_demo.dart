@@ -39,7 +39,8 @@ class WrapAlignmentDemo extends StatefulWidget implements MarkdownDemoWidget {
   String get title => WrapAlignmentDemo._title;
 
   @override
-  String get description => 'Shows the effect the wrap alignment and block '
+  String get description =>
+      'Shows the effect the wrap alignment and block '
       'spacing parameters have on various Markdown tagged elements.';
 
   @override

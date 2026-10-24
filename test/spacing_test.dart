@@ -10,12 +10,19 @@ import 'package:markdown/markdown.dart' as md;
 // ---------- Layout helpers ----------
 
 Future<void> _pumpMarkdown(WidgetTester tester, String data, MarkdownStyleSheet style, {double width = 300}) {
-  return tester.pumpWidget(MaterialApp(
+  return tester.pumpWidget(
+    MaterialApp(
       home: Scaffold(
-          body: Align(
-    alignment: Alignment.topLeft,
-    child: SizedBox(width: width, child: MarkdownBody(data: data, styleSheet: style)),
-  ))));
+        body: Align(
+          alignment: Alignment.topLeft,
+          child: SizedBox(
+            width: width,
+            child: MarkdownBody(data: data, styleSheet: style),
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 double _gap(WidgetTester tester, String before, String after) =>
@@ -24,8 +31,12 @@ double _gap(WidgetTester tester, String before, String after) =>
 // ---------- Spacing behavior ----------
 
 void main() {
-  final MarkdownStyleSheet style =
-      MarkdownStyleSheet(blockSpacing: 23, listItemSpacing: 7, headingSpacing: 11, headingBeforeSpacing: 31);
+  final MarkdownStyleSheet style = MarkdownStyleSheet(
+    blockSpacing: 23,
+    listItemSpacing: 7,
+    headingSpacing: 11,
+    headingBeforeSpacing: 31,
+  );
 
   testWidgets('headings have asymmetric gaps without edge gaps', (WidgetTester tester) async {
     await _pumpMarkdown(tester, 'Start\n\n# First\n## Second\n\nEnd\n\nFinal', style);
@@ -59,16 +70,27 @@ void main() {
 
   testWidgets('nested headings and styles propagate to both Markdown widgets', (WidgetTester tester) async {
     await _pumpMarkdown(
-        tester, '- # List heading\n\n  List paragraph\n\n> ## Quote heading\n>\n> Quote paragraph', style);
+      tester,
+      '- # List heading\n\n  List paragraph\n\n> ## Quote heading\n>\n> Quote paragraph',
+      style,
+    );
     expect(_gap(tester, 'List heading', 'List paragraph'), 11);
     expect(_gap(tester, 'Quote heading', 'Quote paragraph'), 11);
     for (final double spacing in <double>[9, 17]) {
-      await tester.pumpWidget(MaterialApp(
+      await tester.pumpWidget(
+        MaterialApp(
           home: Scaffold(
-              body: Markdown(
-        data: 'Intro\n\n# Heading\n\nParagraph\n\n- First\n- Second',
-        styleSheet: style.copyWith(headingSpacing: spacing, headingBeforeSpacing: spacing, listItemSpacing: spacing),
-      ))));
+            body: Markdown(
+              data: 'Intro\n\n# Heading\n\nParagraph\n\n- First\n- Second',
+              styleSheet: style.copyWith(
+                headingSpacing: spacing,
+                headingBeforeSpacing: spacing,
+                listItemSpacing: spacing,
+              ),
+            ),
+          ),
+        ),
+      );
       expect(_gap(tester, 'Intro', 'Heading'), spacing);
       expect(_gap(tester, 'Heading', 'Paragraph'), spacing);
       expect(_gap(tester, 'First', 'Second'), spacing);
@@ -85,40 +107,42 @@ void main() {
   });
 
   testWidgets('unset builder spacing falls back to block spacing', (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(home: Builder(builder: (BuildContext context) {
-      final MarkdownBuilder builder = MarkdownBuilder(
-        delegate: _TestDelegate(context),
-        selectable: false,
-        styleSheet: MarkdownStyleSheet(
-          blockSpacing: 23,
-          p: const TextStyle(fontSize: 14),
-          pPadding: EdgeInsets.zero,
-          h1: const TextStyle(fontSize: 20),
-          h1Padding: EdgeInsets.zero,
-          listBullet: const TextStyle(fontSize: 14),
-          listIndent: 24,
-          listBulletPadding: EdgeInsets.zero,
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Builder(
+          builder: (BuildContext context) {
+            final MarkdownBuilder builder = MarkdownBuilder(
+              delegate: _TestDelegate(context),
+              selectable: false,
+              styleSheet: MarkdownStyleSheet(
+                blockSpacing: 23,
+                p: const TextStyle(fontSize: 14),
+                pPadding: EdgeInsets.zero,
+                h1: const TextStyle(fontSize: 20),
+                h1Padding: EdgeInsets.zero,
+                listBullet: const TextStyle(fontSize: 14),
+                listIndent: 24,
+                listBulletPadding: EdgeInsets.zero,
+              ),
+              imageDirectory: null,
+              imageBuilder: null,
+              checkboxBuilder: null,
+              bulletBuilder: null,
+              builders: <String, MarkdownElementBuilder>{},
+              paddingBuilders: <String, MarkdownPaddingBuilder>{},
+              listItemCrossAxisAlignment: MarkdownListItemCrossAxisAlignment.baseline,
+            );
+            return Column(
+              children: builder.build(
+                md.Document().parse(
+                  <String>['Intro', '', '# Heading', '', 'Paragraph', '', '- First', '- Second'].join('\n'),
+                ),
+              ),
+            );
+          },
         ),
-        imageDirectory: null,
-        imageBuilder: null,
-        checkboxBuilder: null,
-        bulletBuilder: null,
-        builders: <String, MarkdownElementBuilder>{},
-        paddingBuilders: <String, MarkdownPaddingBuilder>{},
-        listItemCrossAxisAlignment: MarkdownListItemCrossAxisAlignment.baseline,
-      );
-      return Column(
-          children: builder.build(md.Document().parseLines(<String>[
-        'Intro',
-        '',
-        '# Heading',
-        '',
-        'Paragraph',
-        '',
-        '- First',
-        '- Second',
-      ])));
-    })));
+      ),
+    );
     expect(_gap(tester, 'Intro', 'Heading'), 23);
     expect(_gap(tester, 'Heading', 'Paragraph'), 23);
     expect(_gap(tester, 'First', 'Second'), 23);
@@ -135,11 +159,13 @@ void main() {
   }
 
   test('new fields survive copying, merging, equality and hashing', () {
-    final MarkdownStyleSheet base =
-        MarkdownStyleSheet.fromTheme(ThemeData(textTheme: const TextTheme(bodyMedium: TextStyle(fontSize: 14))));
+    final MarkdownStyleSheet base = MarkdownStyleSheet.fromTheme(
+      ThemeData(textTheme: const TextTheme(bodyMedium: TextStyle(fontSize: 14))),
+    );
     final MarkdownStyleSheet copy = base.copyWith(listItemSpacing: 7, headingSpacing: 11, headingBeforeSpacing: 31);
-    final MarkdownStyleSheet merged =
-        base.merge(MarkdownStyleSheet(listItemSpacing: 7, headingSpacing: 11, headingBeforeSpacing: 31));
+    final MarkdownStyleSheet merged = base.merge(
+      MarkdownStyleSheet(listItemSpacing: 7, headingSpacing: 11, headingBeforeSpacing: 31),
+    );
     expect(copy, merged);
     expect(copy.hashCode, merged.hashCode);
     expect(copy.copyWith(listItemSpacing: 19), isNot(copy));

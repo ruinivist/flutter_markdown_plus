@@ -4,8 +4,6 @@
 // LaTeX rendering is adapted from flutter_markdown_plus_latex (Apache-2.0).
 // Integration and styling have been modified; see LICENSE.latex.
 
-import 'dart:convert';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -25,8 +23,8 @@ import 'latex_syntax.dart';
 /// [text] for the caller to process.
 ///
 /// Used by [MarkdownWidget.onSelectionChanged]
-typedef MarkdownOnSelectionChangedCallback = void Function(
-    String? text, TextSelection selection, SelectionChangedCause? cause);
+typedef MarkdownOnSelectionChangedCallback =
+    void Function(String? text, TextSelection selection, SelectionChangedCause? cause);
 
 /// Signature for callbacks used by [MarkdownWidget] when the user taps a link.
 /// The callback will return the link text, destination, and title from the
@@ -48,20 +46,14 @@ typedef MarkdownCheckboxBuilder = Widget Function(bool value);
 /// Signature for custom bullet widget.
 ///
 /// Used by [MarkdownWidget.bulletBuilder]
-typedef MarkdownBulletBuilder = Widget Function(
-  MarkdownBulletParameters parameters,
-);
+typedef MarkdownBulletBuilder = Widget Function(MarkdownBulletParameters parameters);
 
 /// An parameters of [MarkdownBulletBuilder].
 ///
 /// Used by [MarkdownWidget.bulletBuilder]
 class MarkdownBulletParameters {
   /// Creates a new instance of [MarkdownBulletParameters].
-  const MarkdownBulletParameters({
-    required this.index,
-    required this.style,
-    required this.nestLevel,
-  });
+  const MarkdownBulletParameters({required this.index, required this.style, required this.nestLevel});
 
   /// The index of the bullet on that nesting level.
   final int index;
@@ -277,13 +269,8 @@ abstract class MarkdownWidget extends StatefulWidget {
   /// to null to suppress the text selection context menu.
   final EditableTextContextMenuBuilder? contextMenuBuilder;
 
-  static Widget _defaultContextMenuBuilder(
-    BuildContext context,
-    EditableTextState editableTextState,
-  ) {
-    return AdaptiveTextSelectionToolbar.editableText(
-      editableTextState: editableTextState,
-    );
+  static Widget _defaultContextMenuBuilder(BuildContext context, EditableTextState editableTextState) {
+    return AdaptiveTextSelectionToolbar.editableText(editableTextState: editableTextState);
   }
 
   /// The base directory holding images referenced by Img tags with local or network file paths.
@@ -403,8 +390,7 @@ class _MarkdownWidgetState extends State<MarkdownWidget> implements MarkdownBuil
     );
 
     // Parse the source Markdown data into nodes of an Abstract Syntax Tree.
-    final List<String> lines = const LineSplitter().convert(widget.data);
-    final List<md.Node> astNodes = document.parseLines(lines);
+    final List<md.Node> astNodes = document.parse(widget.data);
 
     // Configure a Markdown widget builder to traverse the AST nodes and
     // create a widget tree based on the elements.
@@ -416,10 +402,7 @@ class _MarkdownWidgetState extends State<MarkdownWidget> implements MarkdownBuil
       imageBuilder: widget.imageBuilder,
       checkboxBuilder: widget.checkboxBuilder,
       bulletBuilder: widget.bulletBuilder,
-      builders: <String, MarkdownElementBuilder>{
-        'latex': _LatexElementBuilder(styleSheet),
-        ...widget.builders,
-      },
+      builders: <String, MarkdownElementBuilder>{'latex': _LatexElementBuilder(styleSheet), ...widget.builders},
       paddingBuilders: widget.paddingBuilders,
       fitContent: widget.fitContent,
       listItemCrossAxisAlignment: widget.listItemCrossAxisAlignment,

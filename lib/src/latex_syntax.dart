@@ -10,12 +10,12 @@ import 'package:markdown/markdown.dart' as md;
 class LatexInlineSyntax extends md.InlineSyntax {
   /// Creates the built-in inline math syntax.
   LatexInlineSyntax()
-      : super(
-          r'(?<!\$)\$\$(?!\$)((?:\\[^\n]|[^\n\\$]|\$(?!\$))+?)\$\$(?!\$)'
-          r'|(?<!\$)\$(?![\s$])((?:\\[^\n]|[^\n\\$])+?)(?<!\s)\$(?![$0-9])'
-          r'|\\\(((?:\\[^\n]|[^\n\\])+?)\\\)'
-          r'|\\\[((?:\\[^\n]|[^\n\\])+?)\\\]',
-        );
+    : super(
+        r'(?<!\$)\$\$(?!\$)((?:\\[^\n]|[^\n\\$]|\$(?!\$))+?)\$\$(?!\$)'
+        r'|(?<!\$)\$(?![\s$])((?:\\[^\n]|[^\n\\$])+?)(?<!\s)\$(?![$0-9])'
+        r'|\\\(((?:\\[^\n]|[^\n\\])+?)\\\)'
+        r'|\\\[((?:\\[^\n]|[^\n\\])+?)\\\]',
+      );
 
   static final Expando<Set<int>> _backslashOpeners = Expando<Set<int>>();
 
@@ -66,10 +66,9 @@ class LatexInlineSyntax extends md.InlineSyntax {
 
   @override
   bool onMatch(md.InlineParser parser, Match match) {
-    parser.addNode(_latexElement(
-      match[1] ?? match[2] ?? match[3] ?? match[4]!,
-      display: match[1] != null || match[4] != null,
-    ));
+    parser.addNode(
+      _latexElement(match[1] ?? match[2] ?? match[3] ?? match[4]!, display: match[1] != null || match[4] != null),
+    );
     return true;
   }
 }

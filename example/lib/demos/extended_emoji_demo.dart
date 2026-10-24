@@ -57,7 +57,8 @@ class ExtendedEmojiDemo extends StatelessWidget implements MarkdownDemoWidget {
   String get title => ExtendedEmojiDemo._title;
 
   @override
-  String get description => 'Demonstrates how to extend an existing inline'
+  String get description =>
+      'Demonstrates how to extend an existing inline'
       ' syntax parser by intercepting the parser onMatch routine.';
 
   @override
@@ -82,13 +83,8 @@ class ExtendedEmojiDemo extends StatelessWidget implements MarkdownDemoWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                MarkdownBody(
-                  data: _notExtended + snapshot.data!,
-                  extensionSet: MarkdownExtensionSet.githubWeb.value,
-                ),
-                const SizedBox(
-                  height: 24,
-                ),
+                MarkdownBody(data: _notExtended + snapshot.data!, extensionSet: MarkdownExtensionSet.githubWeb.value),
+                const SizedBox(height: 24),
                 MarkdownBody(
                   data: _extended + snapshot.data!,
                   extensionSet: md.ExtensionSet(<md.BlockSyntax>[], <md.InlineSyntax>[ExtendedEmojiSyntax()]),
@@ -105,10 +101,7 @@ class ExtendedEmojiDemo extends StatelessWidget implements MarkdownDemoWidget {
 }
 
 class ExtendedEmojiSyntax extends md.EmojiSyntax {
-  static const Map<String, String> alternateTags = <String, String>{
-    'thumbsup': '👍',
-    'thumbsdown': '👎',
-  };
+  static const Map<String, String> alternateTags = <String, String>{'thumbsup': '👍', 'thumbsdown': '👎'};
 
   @override
   bool onMatch(md.InlineParser parser, Match match) {

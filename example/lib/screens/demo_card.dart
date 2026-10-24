@@ -16,37 +16,26 @@ class DemoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(
-        context,
-        DemoScreen.routeName,
-        arguments: widget,
-      ),
+      onTap: () => Navigator.pushNamed(context, DemoScreen.routeName, arguments: widget),
       child: Container(
         alignment: Alignment.center,
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 50, minWidth: 425, maxWidth: 425),
           child: Card(
-              color: Colors.blue,
-              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      widget.title,
-                      style: Theme.of(context).primaryTextTheme.headlineSmall,
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    Text(
-                      widget.description,
-                      style: Theme.of(context).primaryTextTheme.bodyLarge,
-                    ),
-                  ],
-                ),
-              )),
+            color: Colors.blue,
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(widget.title, style: Theme.of(context).primaryTextTheme.headlineSmall),
+                  const SizedBox(height: 6),
+                  Text(widget.description, style: Theme.of(context).primaryTextTheme.bodyLarge),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

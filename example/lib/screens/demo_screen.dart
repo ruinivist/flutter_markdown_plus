@@ -29,9 +29,7 @@ class DemoScreen extends StatelessWidget {
           bottom: TabBar(
             indicatorPadding: const EdgeInsets.only(bottom: 8),
             indicatorSize: TabBarIndicatorSize.label,
-            tabs: <Widget>[
-              for (final String label in _tabLabels) Tab(text: label),
-            ],
+            tabs: <Widget>[for (final String label in _tabLabels) Tab(text: label)],
           ),
         ),
         body: TabBarView(
@@ -55,10 +53,7 @@ class DemoFormattedView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1250),
-        child: child,
-      ),
+      child: ConstrainedBox(constraints: const BoxConstraints(maxWidth: 1250), child: child),
     );
   }
 }
@@ -80,10 +75,9 @@ class DemoRawDataView extends StatelessWidget {
               child: Text(
                 snapshot.data!,
                 softWrap: true,
-                style: Theme.of(context)
-                    .primaryTextTheme
-                    .bodyLarge!
-                    .copyWith(fontFamily: 'Roboto Mono', color: Colors.black),
+                style: Theme.of(
+                  context,
+                ).primaryTextTheme.bodyLarge!.copyWith(fontFamily: 'Roboto Mono', color: Colors.black),
               ),
             ),
           );
@@ -103,58 +97,30 @@ class DemoNotesView extends StatelessWidget {
   // Handle the link. The [href] in the callback contains information
   // from the link. The url_launcher package or other similar package
   // can be used to execute the link.
-  Future<void> linkOnTapHandler(
-    BuildContext context,
-    String text,
-    String? href,
-    String title,
-  ) async {
+  Future<void> linkOnTapHandler(BuildContext context, String text, String? href, String title) async {
     await showDialog<Widget>(
       context: context,
       builder: (BuildContext context) => _createDialog(context, text, href, title),
     );
   }
 
-  Widget _createDialog(
-    BuildContext context,
-    String text,
-    String? href,
-    String title,
-  ) =>
-      AlertDialog(
-        title: const Text('Reference Link'),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text(
-                'See the following link for more information:',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Link text: $text',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Link destination: $href',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Link title: $title',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          )
+  Widget _createDialog(BuildContext context, String text, String? href, String title) => AlertDialog(
+    title: const Text('Reference Link'),
+    content: SingleChildScrollView(
+      child: ListBody(
+        children: <Widget>[
+          Text('See the following link for more information:', style: Theme.of(context).textTheme.bodyLarge),
+          const SizedBox(height: 8),
+          Text('Link text: $text', style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 8),
+          Text('Link destination: $href', style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 8),
+          Text('Link title: $title', style: Theme.of(context).textTheme.bodyMedium),
         ],
-      );
+      ),
+    ),
+    actions: <Widget>[TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('OK'))],
+  );
 
   @override
   Widget build(BuildContext context) {

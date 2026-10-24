@@ -100,7 +100,8 @@ class MinimalMarkdownDemo extends StatelessWidget implements MarkdownDemoWidget 
   String get title => MinimalMarkdownDemo._title;
 
   @override
-  String get description => 'A minimal example of how to use the Markdown '
+  String get description =>
+      'A minimal example of how to use the Markdown '
       'widget in a Flutter app.';
 
   @override
@@ -111,8 +112,6 @@ class MinimalMarkdownDemo extends StatelessWidget implements MarkdownDemoWidget 
 
   @override
   Widget build(BuildContext context) {
-    return const Markdown(
-      data: _data,
-    );
+    return const Markdown(data: _data);
   }
 }

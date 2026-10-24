@@ -52,10 +52,7 @@ class CenteredHeaderDemo extends StatelessWidget implements MarkdownDemoWidget {
         if (snapshot.connectionState == ConnectionState.done) {
           return Markdown(
             data: snapshot.data!,
-            builders: <String, MarkdownElementBuilder>{
-              'h2': CenteredHeaderBuilder(),
-              'h6': CenteredHeaderBuilder(),
-            },
+            builders: <String, MarkdownElementBuilder>{'h2': CenteredHeaderBuilder(), 'h6': CenteredHeaderBuilder()},
           );
         } else {
           return const CircularProgressIndicator();
@@ -70,9 +67,7 @@ class CenteredHeaderBuilder extends MarkdownElementBuilder {
   Widget visitText(md.Text text, TextStyle? preferredStyle) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(text.text, style: preferredStyle),
-      ],
+      children: <Widget>[Text(text.text, style: preferredStyle)],
     );
   }
 }

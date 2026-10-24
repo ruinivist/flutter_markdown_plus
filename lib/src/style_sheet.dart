@@ -70,37 +70,38 @@ class MarkdownStyleSheet {
     this.superscriptFontFeatureTag,
     @Deprecated('Use textScaler instead.') this.textScaleFactor,
     TextScaler? textScaler,
-  })  : assert(
-          textScaler == null || textScaleFactor == null,
-          'textScaleFactor is deprecated and cannot be specified when textScaler is specified.',
-        ),
-        textScaler = textScaler ??
-            // Internally, only textScaler is used, so convert the scale factor
-            // to a linear scaler.
-            (textScaleFactor == null ? null : TextScaler.linear(textScaleFactor)),
-        _styles = <String, TextStyle?>{
-          'a': a,
-          'p': p,
-          'li': p,
-          'code': code,
-          'latex': latex,
-          'pre': p,
-          'h1': h1,
-          'h2': h2,
-          'h3': h3,
-          'h4': h4,
-          'h5': h5,
-          'h6': h6,
-          'em': em,
-          'strong': strong,
-          'del': del,
-          'blockquote': blockquote,
-          'img': img,
-          'table': p,
-          'th': tableHead,
-          'tr': tableBody,
-          'td': tableBody,
-        };
+  }) : assert(
+         textScaler == null || textScaleFactor == null,
+         'textScaleFactor is deprecated and cannot be specified when textScaler is specified.',
+       ),
+       textScaler =
+           textScaler ??
+           // Internally, only textScaler is used, so convert the scale factor
+           // to a linear scaler.
+           (textScaleFactor == null ? null : TextScaler.linear(textScaleFactor)),
+       _styles = <String, TextStyle?>{
+         'a': a,
+         'p': p,
+         'li': p,
+         'code': code,
+         'latex': latex,
+         'pre': p,
+         'h1': h1,
+         'h2': h2,
+         'h3': h3,
+         'h4': h4,
+         'h5': h5,
+         'h6': h6,
+         'em': em,
+         'strong': strong,
+         'del': del,
+         'blockquote': blockquote,
+         'img': img,
+         'table': p,
+         'th': tableHead,
+         'tr': tableBody,
+         'td': tableBody,
+       };
 
   /// Creates a [MarkdownStyleSheet] from the [TextStyle]s in the provided [ThemeData].
   factory MarkdownStyleSheet.fromTheme(ThemeData theme) {
@@ -131,9 +132,7 @@ class MarkdownStyleSheet {
       del: const TextStyle(decoration: TextDecoration.lineThrough),
       blockquote: theme.textTheme.bodyMedium,
       img: theme.textTheme.bodyMedium,
-      checkbox: theme.textTheme.bodyMedium!.copyWith(
-        color: theme.primaryColor,
-      ),
+      checkbox: theme.textTheme.bodyMedium!.copyWith(color: theme.primaryColor),
       blockSpacing: 12.0,
       listItemSpacing: 4.0,
       headingSpacing: 8.0,
@@ -145,9 +144,7 @@ class MarkdownStyleSheet {
       tableBody: theme.textTheme.bodyMedium,
       tableHeadAlign: TextAlign.center,
       tablePadding: const EdgeInsets.only(bottom: 4.0),
-      tableBorder: TableBorder.all(
-        color: theme.dividerColor,
-      ),
+      tableBorder: TableBorder.all(color: theme.dividerColor),
       tableColumnWidth: const FlexColumnWidth(),
       tableCellsPadding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       tableCellsDecoration: const BoxDecoration(),
@@ -155,12 +152,7 @@ class MarkdownStyleSheet {
       blockquoteDecoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(3),
-        border: Border(
-          left: BorderSide(
-            color: theme.colorScheme.primary,
-            width: 3,
-          ),
-        ),
+        border: Border(left: BorderSide(color: theme.colorScheme.primary, width: 3)),
       ),
       codeblockPadding: const EdgeInsets.all(8.0),
       codeblockDecoration: BoxDecoration(
@@ -168,12 +160,7 @@ class MarkdownStyleSheet {
         borderRadius: BorderRadius.circular(2.0),
       ),
       horizontalRuleDecoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(
-            width: 5.0,
-            color: theme.dividerColor,
-          ),
-        ),
+        border: Border(top: BorderSide(width: 5.0, color: theme.dividerColor)),
       ),
     );
   }
@@ -216,24 +203,14 @@ class MarkdownStyleSheet {
         fontSize: theme.textTheme.textStyle.fontSize! + 2,
       ),
       h5Padding: EdgeInsets.zero,
-      h6: theme.textTheme.textStyle.copyWith(
-        fontWeight: FontWeight.w500,
-      ),
+      h6: theme.textTheme.textStyle.copyWith(fontWeight: FontWeight.w500),
       h6Padding: EdgeInsets.zero,
-      em: theme.textTheme.textStyle.copyWith(
-        fontStyle: FontStyle.italic,
-      ),
-      strong: theme.textTheme.textStyle.copyWith(
-        fontWeight: FontWeight.bold,
-      ),
-      del: theme.textTheme.textStyle.copyWith(
-        decoration: TextDecoration.lineThrough,
-      ),
+      em: theme.textTheme.textStyle.copyWith(fontStyle: FontStyle.italic),
+      strong: theme.textTheme.textStyle.copyWith(fontWeight: FontWeight.bold),
+      del: theme.textTheme.textStyle.copyWith(decoration: TextDecoration.lineThrough),
       blockquote: theme.textTheme.textStyle,
       img: theme.textTheme.textStyle,
-      checkbox: theme.textTheme.textStyle.copyWith(
-        color: theme.primaryColor,
-      ),
+      checkbox: theme.textTheme.textStyle.copyWith(color: theme.primaryColor),
       blockSpacing: 12,
       listItemSpacing: 4,
       headingSpacing: 8,
@@ -241,9 +218,7 @@ class MarkdownStyleSheet {
       listIndent: 24,
       listBullet: theme.textTheme.textStyle,
       listBulletPadding: const EdgeInsets.only(right: 4),
-      tableHead: theme.textTheme.textStyle.copyWith(
-        fontWeight: FontWeight.w600,
-      ),
+      tableHead: theme.textTheme.textStyle.copyWith(fontWeight: FontWeight.w600),
       tableBody: theme.textTheme.textStyle,
       tableHeadAlign: TextAlign.center,
       tablePadding: const EdgeInsets.only(bottom: 8),
@@ -318,9 +293,7 @@ class MarkdownStyleSheet {
       del: const TextStyle(decoration: TextDecoration.lineThrough),
       blockquote: theme.textTheme.bodyMedium,
       img: theme.textTheme.bodyMedium,
-      checkbox: theme.textTheme.bodyMedium!.copyWith(
-        color: theme.primaryColor,
-      ),
+      checkbox: theme.textTheme.bodyMedium!.copyWith(color: theme.primaryColor),
       blockSpacing: 12.0,
       listItemSpacing: 4.0,
       headingSpacing: 8.0,
@@ -332,9 +305,7 @@ class MarkdownStyleSheet {
       tableBody: theme.textTheme.bodyMedium,
       tableHeadAlign: TextAlign.center,
       tablePadding: const EdgeInsets.only(bottom: 4.0),
-      tableBorder: TableBorder.all(
-        color: theme.dividerColor,
-      ),
+      tableBorder: TableBorder.all(color: theme.dividerColor),
       tableColumnWidth: const FlexColumnWidth(),
       tableCellsPadding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       tableCellsDecoration: const BoxDecoration(),
@@ -342,12 +313,7 @@ class MarkdownStyleSheet {
       blockquoteDecoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(3),
-        border: Border(
-          left: BorderSide(
-            color: theme.colorScheme.primary,
-            width: 3,
-          ),
-        ),
+        border: Border(left: BorderSide(color: theme.colorScheme.primary, width: 3)),
       ),
       codeblockPadding: const EdgeInsets.all(8.0),
       codeblockDecoration: BoxDecoration(
@@ -355,12 +321,7 @@ class MarkdownStyleSheet {
         borderRadius: BorderRadius.circular(2.0),
       ),
       horizontalRuleDecoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(
-            width: 5.0,
-            color: theme.dividerColor,
-          ),
-        ),
+        border: Border(top: BorderSide(width: 5.0, color: theme.dividerColor)),
       ),
     );
   }

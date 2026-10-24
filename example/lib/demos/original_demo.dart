@@ -153,7 +153,8 @@ class OriginalMarkdownDemo extends StatelessWidget implements MarkdownDemoWidget
   String get title => OriginalMarkdownDemo._title;
 
   @override
-  String get description => 'The original demo example. This demo was '
+  String get description =>
+      'The original demo example. This demo was '
       'include with versions of the package prior to version 0.4.4.';
 
   @override

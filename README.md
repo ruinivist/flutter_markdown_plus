@@ -57,11 +57,27 @@ To migrate from `flutter_markdown_plus_latex`, remove that dependency and its im
 
 ## Installation
 
-Add the package to your project:
+This fork requires Dart 3.9 or newer and uses the source-tracking Markdown parser in [ruinivist/dart-tools](https://github.com/ruinivist/dart-tools/tree/main/pkgs/markdown). Install it from Git:
 
-```bash
-flutter pub add flutter_markdown_plus
+```yaml
+dependencies:
+  flutter_markdown_plus:
+    git:
+      url: https://github.com/ruinivist/flutter_markdown_plus.git
+      ref: main
 ```
+
+If your application also declares `markdown` directly, use the same Git source as the renderer:
+
+```yaml
+  markdown:
+    git:
+      url: https://github.com/ruinivist/dart-tools.git
+      ref: main
+      path: pkgs/markdown
+```
+
+Custom element builders receive `Element.destinationRange` offsets into the original `data` string, including its original line endings. Widget APIs remain unchanged. Custom syntaxes that use low-level parser APIs must follow the [parser migration guide](https://github.com/ruinivist/dart-tools/blob/main/pkgs/markdown/Fork%20Makrdown.md#migrating-from-upstream).
 
 Then import it where you need it:
 

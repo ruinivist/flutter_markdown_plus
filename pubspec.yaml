@@ -1,4 +1,5 @@
 name: flutter_markdown_plus
+publish_to: none
 description: A Markdown renderer for Flutter. Create rich text output,
   including text styles, tables, links, and more, from plain text data
   formatted with simple Markdown tags.
@@ -8,14 +9,18 @@ documentation: https://pub.dev/documentation/flutter_markdown_plus/latest/
 version: 1.0.12
 
 environment:
-  sdk: ^3.4.0
+  sdk: ^3.9.0
   flutter: ">=3.27.1"
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_math_fork: ^0.7.4
-  markdown: ^7.3.1
+  markdown:
+    git:
+      url: https://github.com/ruinivist/dart-tools.git
+      ref: main
+      path: pkgs/markdown
   meta: ^1.16.0
   path: ^1.9.1
 

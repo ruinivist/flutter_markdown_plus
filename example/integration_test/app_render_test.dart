@@ -51,9 +51,7 @@ void main() {
     });
 
     testWidgets('GFM task list renders checkbox icons', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        buildMarkdownBodyApp(data: '- [ ] todo item\n- [x] done item'),
-      );
+      await tester.pumpWidget(buildMarkdownBodyApp(data: '- [ ] todo item\n- [x] done item'));
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.check_box_outline_blank), findsOneWidget);
@@ -63,12 +61,7 @@ void main() {
     });
 
     testWidgets('selectable markdown surfaces the selection toolbar on long press', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        buildMarkdownApp(
-          data: 'A selectable paragraph of text.',
-          selectable: true,
-        ),
-      );
+      await tester.pumpWidget(buildMarkdownApp(data: 'A selectable paragraph of text.', selectable: true));
       await tester.pumpAndSettle();
 
       await tester.longPress(find.textContaining('selectable paragraph'));

@@ -56,7 +56,8 @@ class BasicMarkdownDemo extends StatefulWidget implements MarkdownDemoWidget {
   String get title => BasicMarkdownDemo._title;
 
   @override
-  String get description => 'Shows the effect the four Markdown extension sets '
+  String get description =>
+      'Shows the effect the four Markdown extension sets '
       'have on basic and extended Markdown tagged elements.';
 
   @override
@@ -118,50 +119,30 @@ class _BasicMarkdownDemoState extends State<BasicMarkdownDemo> {
   // Handle the link. The [href] in the callback contains information
   // from the link. The url_launcher package or other similar package
   // can be used to execute the link.
-  Future<void> linkOnTapHandler(
-    BuildContext context,
-    String text,
-    String? href,
-    String title,
-  ) async {
-    unawaited(showDialog<Widget>(
-      context: context,
-      builder: (BuildContext context) => _createDialog(context, text, href, title),
-    ));
+  Future<void> linkOnTapHandler(BuildContext context, String text, String? href, String title) async {
+    unawaited(
+      showDialog<Widget>(
+        context: context,
+        builder: (BuildContext context) => _createDialog(context, text, href, title),
+      ),
+    );
   }
 
   Widget _createDialog(BuildContext context, String text, String? href, String title) => AlertDialog(
-        title: const Text('Reference Link'),
-        content: SingleChildScrollView(
-          child: ListBody(
-            children: <Widget>[
-              Text(
-                'See the following link for more information:',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Link text: $text',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Link destination: $href',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Link title: $title',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          )
+    title: const Text('Reference Link'),
+    content: SingleChildScrollView(
+      child: ListBody(
+        children: <Widget>[
+          Text('See the following link for more information:', style: Theme.of(context).textTheme.bodyLarge),
+          const SizedBox(height: 8),
+          Text('Link text: $text', style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 8),
+          Text('Link destination: $href', style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: 8),
+          Text('Link title: $title', style: Theme.of(context).textTheme.bodyMedium),
         ],
-      );
+      ),
+    ),
+    actions: <Widget>[TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('OK'))],
+  );
 }

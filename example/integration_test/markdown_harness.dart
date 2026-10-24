@@ -8,19 +8,11 @@ import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 /// Wraps a scrollable [Markdown] widget in a minimal [MaterialApp] so
 /// integration tests can pump a deterministic widget tree without depending on
 /// the example app's demo navigation.
-Widget buildMarkdownApp({
-  required String data,
-  MarkdownTapLinkCallback? onTapLink,
-  bool selectable = false,
-}) {
+Widget buildMarkdownApp({required String data, MarkdownTapLinkCallback? onTapLink, bool selectable = false}) {
   return MaterialApp(
     home: Scaffold(
       body: SafeArea(
-        child: Markdown(
-          data: data,
-          onTapLink: onTapLink,
-          selectable: selectable,
-        ),
+        child: Markdown(data: data, onTapLink: onTapLink, selectable: selectable),
       ),
     ),
   );
@@ -32,9 +24,7 @@ Widget buildMarkdownBodyApp({required String data}) {
   return MaterialApp(
     home: Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: MarkdownBody(data: data),
-        ),
+        child: SingleChildScrollView(child: MarkdownBody(data: data)),
       ),
     ),
   );

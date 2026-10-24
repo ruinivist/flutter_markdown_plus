@@ -13,246 +13,290 @@ import 'utils.dart';
 void main() => defineTests();
 
 void defineTests() {
+  for (final bool scrollable in <bool>[false, true]) {
+    testWidgets('image descriptions stay plain in builders and link taps, scrollable: $scrollable', (
+      WidgetTester tester,
+    ) async {
+      const String source = '''[![Alice's "logo" &amp;quot;](image.png)](page)''';
+      const String description = '''Alice's "logo" &quot;''';
+      final List<String?> descriptions = <String?>[];
+      final List<MarkdownLink> taps = <MarkdownLink>[];
+      Widget imageBuilder(Uri uri, String? title, String? alt) {
+        descriptions.add(alt);
+        return Text(alt!);
+      }
+
+      void onTapLink(String text, String? href, String title) => taps.add(MarkdownLink(text, href, title));
+      await tester.pumpWidget(
+        boilerplate(
+          scrollable
+              ? Markdown(data: source, imageBuilder: imageBuilder, onTapLink: onTapLink)
+              : MarkdownBody(data: source, imageBuilder: imageBuilder, onTapLink: onTapLink),
+        ),
+      );
+      expect(descriptions, <String>[description]);
+      await tester.tap(find.text(description));
+      expect(taps, <MarkdownLink>[const MarkdownLink(description, 'page')]);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  for (final String ending in <String>['\n', '\r\n', '\r']) {
+    for (final bool scrollable in <bool>[false, true]) {
+      testWidgets('builders preserve ranges for ${ending.codeUnits}, scrollable: $scrollable', (
+        WidgetTester tester,
+      ) async {
+        final String source = <String>[
+          '😀 inline.png page.md shared.png',
+          '',
+          r'> - ![inline](<a\(b\).png> "Inline") [link](page.md)',
+          '> - ![reference][shared] ![shared][]',
+          '',
+          '[shared]: <shared.png> "Reference"',
+          '',
+          '~~~',
+          '![code](ignored.png)',
+          '~~~',
+          '',
+          r'$![math](ignored.png)$',
+          '',
+          r'$$',
+          '![display](ignored.png)',
+          r'$$',
+        ].join(ending);
+        final _DestinationBuilder builder = _DestinationBuilder();
+        final Map<String, MarkdownElementBuilder> builders = <String, MarkdownElementBuilder>{
+          'img': builder,
+          'a': builder,
+          'latex': builder,
+        };
+        await tester.pumpWidget(
+          boilerplate(
+            scrollable ? Markdown(data: source, builders: builders) : MarkdownBody(data: source, builders: builders),
+          ),
+        );
+
+        final List<md.Element> destinations = builder.elements
+            .where((md.Element element) => element.tag != 'latex')
+            .toList();
+        final int inlineStart = source.indexOf('(<') + 2;
+        final int linkStart = source.indexOf('](page.md)') + 2;
+        final int referenceStart = source.indexOf('<shared.png>') + 1;
+        expect(destinations.map((md.Element element) => element.destinationRange), <md.SourceRange>[
+          md.SourceRange(inlineStart, inlineStart + r'a\(b\).png'.length),
+          md.SourceRange(linkStart, linkStart + 'page.md'.length),
+          md.SourceRange(referenceStart, referenceStart + 'shared.png'.length),
+          md.SourceRange(referenceStart, referenceStart + 'shared.png'.length),
+        ]);
+        expect(destinations.first.attributes['src'], 'a(b).png');
+        final List<md.Element> equations = builder.elements
+            .where((md.Element element) => element.tag == 'latex')
+            .toList();
+        expect(equations.map((md.Element element) => element.textContent), <String>[
+          '![math](ignored.png)',
+          '![display](ignored.png)',
+        ]);
+        expect(equations.every((md.Element element) => element.destinationRange == null), isTrue);
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
   group('Custom Syntax', () {
-    testWidgets(
-      'Subscript',
-      (WidgetTester tester) async {
-        await tester.pumpWidget(
-          boilerplate(
-            Markdown(
-              data: 'H_2O',
-              extensionSet: md.ExtensionSet.none,
-              inlineSyntaxes: <md.InlineSyntax>[SubscriptSyntax()],
-              builders: <String, MarkdownElementBuilder>{
-                'sub': SubscriptBuilder(),
-              },
-            ),
-          ),
-        );
-
-        final Iterable<Widget> widgets = tester.allWidgets;
-        expectTextStrings(widgets, <String>['H₂O']);
-      },
-    );
-
-    testWidgets(
-      'Custom block element',
-      (WidgetTester tester) async {
-        const String blockContent = 'note block';
-        await tester.pumpWidget(
-          boilerplate(
-            Markdown(
-              data: '[!NOTE] $blockContent',
-              extensionSet: md.ExtensionSet.none,
-              blockSyntaxes: <md.BlockSyntax>[NoteSyntax()],
-              builders: <String, MarkdownElementBuilder>{
-                'note': NoteBuilder(),
-              },
-            ),
-          ),
-        );
-        final ColoredBox container = tester.widgetList(find.byType(ColoredBox)).first as ColoredBox;
-        expect(container.color, Colors.red);
-        expect(container.child, isInstanceOf<Text>());
-        expect((container.child! as Text).data, blockContent);
-      },
-    );
-
-    testWidgets(
-      'Block with custom tag',
-      (WidgetTester tester) async {
-        const String textBefore = 'Before ';
-        const String textAfter = ' After';
-        const String blockContent = 'Custom content rendered in a ColoredBox';
-
-        await tester.pumpWidget(
-          boilerplate(
-            Markdown(
-              data: '$textBefore\n{{custom}}\n$blockContent\n{{/custom}}\n$textAfter',
-              extensionSet: md.ExtensionSet.none,
-              blockSyntaxes: <md.BlockSyntax>[CustomTagBlockSyntax()],
-              builders: <String, MarkdownElementBuilder>{
-                'custom': CustomTagBlockBuilder(),
-              },
-            ),
-          ),
-        );
-
-        final ColoredBox container = tester.widgetList(find.byType(ColoredBox)).first as ColoredBox;
-        expect(container.color, Colors.red);
-        expect(container.child, isInstanceOf<Text>());
-        expect((container.child! as Text).data, blockContent);
-      },
-    );
-
-    testWidgets(
-      'link for wikistyle',
-      (WidgetTester tester) async {
-        await tester.pumpWidget(
-          boilerplate(
-            Markdown(
-              data: 'This is a [[wiki link]]',
-              extensionSet: md.ExtensionSet.none,
-              inlineSyntaxes: <md.InlineSyntax>[WikilinkSyntax()],
-              builders: <String, MarkdownElementBuilder>{
-                'wikilink': WikilinkBuilder(),
-              },
-            ),
-          ),
-        );
-
-        final Text textWidget = tester.widget(find.byType(Text));
-        final TextSpan span = (textWidget.textSpan! as TextSpan).children![1] as TextSpan;
-
-        expect(span.children, null);
-        expect(span.recognizer.runtimeType, equals(TapGestureRecognizer));
-      },
-    );
-
-    testWidgets(
-      'WidgetSpan in Text.rich is handled correctly',
-      (WidgetTester tester) async {
-        await tester.pumpWidget(
-          boilerplate(
-            Markdown(
-              data: 'container is a widget that allows to customize its child',
-              extensionSet: md.ExtensionSet.none,
-              inlineSyntaxes: <md.InlineSyntax>[ContainerSyntax()],
-              builders: <String, MarkdownElementBuilder>{
-                'container': ContainerBuilder(),
-              },
-            ),
-          ),
-        );
-
-        final Text textWidget = tester.widget(find.byType(Text));
-        final TextSpan textSpan = textWidget.textSpan! as TextSpan;
-        final WidgetSpan widgetSpan = textSpan.children![0] as WidgetSpan;
-        expect(widgetSpan.child, isInstanceOf<Container>());
-      },
-    );
-
-    testWidgets(
-      'visitElementAfterWithContext is handled correctly',
-      (WidgetTester tester) async {
-        await tester.pumpWidget(
-          boilerplate(
-            Markdown(
-              data: r'# This is a header with some \color1{color} in it',
-              extensionSet: md.ExtensionSet.none,
-              inlineSyntaxes: <md.InlineSyntax>[InlineTextColorSyntax()],
-              builders: <String, MarkdownElementBuilder>{
-                'inlineTextColor': InlineTextColorElementBuilder(),
-              },
-            ),
-          ),
-        );
-
-        final Text textWidget = tester.widget(find.byType(Text));
-        final TextSpan rootSpan = textWidget.textSpan! as TextSpan;
-        final TextSpan firstSpan = rootSpan.children![0] as TextSpan;
-        final TextSpan secondSpan = rootSpan.children![1] as TextSpan;
-        final TextSpan thirdSpan = rootSpan.children![2] as TextSpan;
-
-        expect(secondSpan.style!.color, Colors.red);
-        expect(secondSpan.style!.fontSize, firstSpan.style!.fontSize);
-        expect(secondSpan.style!.fontSize, thirdSpan.style!.fontSize);
-      },
-    );
-  });
-
-  testWidgets(
-    'TextSpan and WidgetSpan as children in Text.rich are handled correctly',
-    (WidgetTester tester) async {
+    testWidgets('Subscript', (WidgetTester tester) async {
       await tester.pumpWidget(
         boilerplate(
           Markdown(
-            data: 'this test replaces a string with a container',
+            data: 'H_2O',
+            extensionSet: md.ExtensionSet.none,
+            inlineSyntaxes: <md.InlineSyntax>[SubscriptSyntax()],
+            builders: <String, MarkdownElementBuilder>{'sub': SubscriptBuilder()},
+          ),
+        ),
+      );
+
+      final Iterable<Widget> widgets = tester.allWidgets;
+      expectTextStrings(widgets, <String>['H₂O']);
+    });
+
+    testWidgets('Custom block element', (WidgetTester tester) async {
+      const String blockContent = 'note block';
+      await tester.pumpWidget(
+        boilerplate(
+          Markdown(
+            data: '[!NOTE] $blockContent',
+            extensionSet: md.ExtensionSet.none,
+            blockSyntaxes: <md.BlockSyntax>[NoteSyntax()],
+            builders: <String, MarkdownElementBuilder>{'note': NoteBuilder()},
+          ),
+        ),
+      );
+      final ColoredBox container = tester.widgetList(find.byType(ColoredBox)).first as ColoredBox;
+      expect(container.color, Colors.red);
+      expect(container.child, isInstanceOf<Text>());
+      expect((container.child! as Text).data, blockContent);
+    });
+
+    testWidgets('Block with custom tag', (WidgetTester tester) async {
+      const String textBefore = 'Before ';
+      const String textAfter = ' After';
+      const String blockContent = 'Custom content rendered in a ColoredBox';
+
+      await tester.pumpWidget(
+        boilerplate(
+          Markdown(
+            data: '$textBefore\n{{custom}}\n$blockContent\n{{/custom}}\n$textAfter',
+            extensionSet: md.ExtensionSet.none,
+            blockSyntaxes: <md.BlockSyntax>[CustomTagBlockSyntax()],
+            builders: <String, MarkdownElementBuilder>{'custom': CustomTagBlockBuilder()},
+          ),
+        ),
+      );
+
+      final ColoredBox container = tester.widgetList(find.byType(ColoredBox)).first as ColoredBox;
+      expect(container.color, Colors.red);
+      expect(container.child, isInstanceOf<Text>());
+      expect((container.child! as Text).data, blockContent);
+    });
+
+    testWidgets('link for wikistyle', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        boilerplate(
+          Markdown(
+            data: 'This is a [[wiki link]]',
+            extensionSet: md.ExtensionSet.none,
+            inlineSyntaxes: <md.InlineSyntax>[WikilinkSyntax()],
+            builders: <String, MarkdownElementBuilder>{'wikilink': WikilinkBuilder()},
+          ),
+        ),
+      );
+
+      final Text textWidget = tester.widget(find.byType(Text));
+      final TextSpan span = (textWidget.textSpan! as TextSpan).children![1] as TextSpan;
+
+      expect(span.children, null);
+      expect(span.recognizer.runtimeType, equals(TapGestureRecognizer));
+    });
+
+    testWidgets('WidgetSpan in Text.rich is handled correctly', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        boilerplate(
+          Markdown(
+            data: 'container is a widget that allows to customize its child',
             extensionSet: md.ExtensionSet.none,
             inlineSyntaxes: <md.InlineSyntax>[ContainerSyntax()],
-            builders: <String, MarkdownElementBuilder>{
-              'container': ContainerBuilder2(),
-            },
+            builders: <String, MarkdownElementBuilder>{'container': ContainerBuilder()},
           ),
         ),
       );
 
       final Text textWidget = tester.widget(find.byType(Text));
       final TextSpan textSpan = textWidget.textSpan! as TextSpan;
-      final TextSpan start = textSpan.children![0] as TextSpan;
-      expect(start.text, 'this test replaces a string with a ');
-      final TextSpan foo = textSpan.children![1] as TextSpan;
-      expect(foo.text, 'foo');
-      final WidgetSpan widgetSpan = textSpan.children![2] as WidgetSpan;
+      final WidgetSpan widgetSpan = textSpan.children![0] as WidgetSpan;
       expect(widgetSpan.child, isInstanceOf<Container>());
-    },
-  );
+    });
 
-  testWidgets(
-    'Custom rendering of tags without children',
-    (WidgetTester tester) async {
-      const String data = '![alt](/assets/images/logo.png)';
+    testWidgets('visitElementAfterWithContext is handled correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
         boilerplate(
           Markdown(
-            data: data,
-            builders: <String, MarkdownElementBuilder>{
-              'img': ImgBuilder(),
-            },
+            data: r'# This is a header with some \color1{color} in it',
+            extensionSet: md.ExtensionSet.none,
+            inlineSyntaxes: <md.InlineSyntax>[InlineTextColorSyntax()],
+            builders: <String, MarkdownElementBuilder>{'inlineTextColor': InlineTextColorElementBuilder()},
           ),
         ),
       );
 
-      final Finder imageFinder = find.byType(Image);
-      expect(imageFinder, findsNothing);
-      final Finder textFinder = find.byType(Text);
-      expect(textFinder, findsOneWidget);
       final Text textWidget = tester.widget(find.byType(Text));
-      expect(textWidget.data, 'foo');
-    },
-  );
+      final TextSpan rootSpan = textWidget.textSpan! as TextSpan;
+      final TextSpan firstSpan = rootSpan.children![0] as TextSpan;
+      final TextSpan secondSpan = rootSpan.children![1] as TextSpan;
+      final TextSpan thirdSpan = rootSpan.children![2] as TextSpan;
 
-  testWidgets(
-    'inline builder replaces all children, not just the first (issue #132)',
-    (WidgetTester tester) async {
-      // The link text starts with an unpaired `_`, which the parser splits into
-      // multiple text nodes (`[Text("_"), Text("hello world")]`). A custom `a`
-      // builder returning a widget must replace *all* of them, otherwise the
-      // trailing "hello world" leaks through and renders twice.
-      await tester.pumpWidget(
-        boilerplate(
-          Markdown(
-            data: '[_hello world](https://example.com)',
-            builders: <String, MarkdownElementBuilder>{
-              'a': LinkTagBuilder(),
-            },
-          ),
+      expect(secondSpan.style!.color, Colors.red);
+      expect(secondSpan.style!.fontSize, firstSpan.style!.fontSize);
+      expect(secondSpan.style!.fontSize, thirdSpan.style!.fontSize);
+    });
+  });
+
+  testWidgets('TextSpan and WidgetSpan as children in Text.rich are handled correctly', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      boilerplate(
+        Markdown(
+          data: 'this test replaces a string with a container',
+          extensionSet: md.ExtensionSet.none,
+          inlineSyntaxes: <md.InlineSyntax>[ContainerSyntax()],
+          builders: <String, MarkdownElementBuilder>{'container': ContainerBuilder2()},
         ),
-      );
+      ),
+    );
 
-      expect(find.text('LINK'), findsOneWidget);
-      expect(find.textContaining('hello world', findRichText: true), findsNothing);
-    },
-  );
+    final Text textWidget = tester.widget(find.byType(Text));
+    final TextSpan textSpan = textWidget.textSpan! as TextSpan;
+    final TextSpan start = textSpan.children![0] as TextSpan;
+    expect(start.text, 'this test replaces a string with a ');
+    final TextSpan foo = textSpan.children![1] as TextSpan;
+    expect(foo.text, 'foo');
+    final WidgetSpan widgetSpan = textSpan.children![2] as WidgetSpan;
+    expect(widgetSpan.child, isInstanceOf<Container>());
+  });
 
-  testWidgets(
-    'inline builder replaces all children with a `*` delimiter (issue #132)',
-    (WidgetTester tester) async {
-      await tester.pumpWidget(
-        boilerplate(
-          Markdown(
-            data: '[*hello world](https://example.com)',
-            builders: <String, MarkdownElementBuilder>{
-              'a': LinkTagBuilder(),
-            },
-          ),
+  testWidgets('Custom rendering of tags without children', (WidgetTester tester) async {
+    const String data = '![alt](/assets/images/logo.png)';
+    await tester.pumpWidget(
+      boilerplate(Markdown(data: data, builders: <String, MarkdownElementBuilder>{'img': ImgBuilder()})),
+    );
+
+    final Finder imageFinder = find.byType(Image);
+    expect(imageFinder, findsNothing);
+    final Finder textFinder = find.byType(Text);
+    expect(textFinder, findsOneWidget);
+    final Text textWidget = tester.widget(find.byType(Text));
+    expect(textWidget.data, 'foo');
+  });
+
+  testWidgets('inline builder replaces all children, not just the first (issue #132)', (WidgetTester tester) async {
+    // The link text starts with an unpaired `_`, which the parser splits into
+    // multiple text nodes (`[Text("_"), Text("hello world")]`). A custom `a`
+    // builder returning a widget must replace *all* of them, otherwise the
+    // trailing "hello world" leaks through and renders twice.
+    await tester.pumpWidget(
+      boilerplate(
+        Markdown(
+          data: '[_hello world](https://example.com)',
+          builders: <String, MarkdownElementBuilder>{'a': LinkTagBuilder()},
         ),
-      );
+      ),
+    );
 
-      expect(find.text('LINK'), findsOneWidget);
-      expect(find.textContaining('hello world', findRichText: true), findsNothing);
-    },
-  );
+    expect(find.text('LINK'), findsOneWidget);
+    expect(find.textContaining('hello world', findRichText: true), findsNothing);
+  });
+
+  testWidgets('inline builder replaces all children with a `*` delimiter (issue #132)', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      boilerplate(
+        Markdown(
+          data: '[*hello world](https://example.com)',
+          builders: <String, MarkdownElementBuilder>{'a': LinkTagBuilder()},
+        ),
+      ),
+    );
+
+    expect(find.text('LINK'), findsOneWidget);
+    expect(find.textContaining('hello world', findRichText: true), findsNothing);
+  });
+}
+
+class _DestinationBuilder extends MarkdownElementBuilder {
+  final List<md.Element> elements = <md.Element>[];
+
+  @override
+  Widget visitElementAfter(md.Element element, TextStyle? preferredStyle) {
+    elements.add(element);
+    return Text(element.textContent, style: preferredStyle);
+  }
 }
 
 class SubscriptSyntax extends md.InlineSyntax {
@@ -304,9 +348,7 @@ class WikilinkBuilder extends MarkdownElementBuilder {
   Widget visitElementAfter(md.Element element, _) {
     final TapGestureRecognizer recognizer = TapGestureRecognizer()..onTap = () {};
     addTearDown(recognizer.dispose);
-    return Text.rich(
-      TextSpan(text: element.textContent, recognizer: recognizer),
-    );
+    return Text.rich(TextSpan(text: element.textContent, recognizer: recognizer));
   }
 }
 
@@ -317,9 +359,7 @@ class ContainerSyntax extends md.InlineSyntax {
 
   @override
   bool onMatch(md.InlineParser parser, Match match) {
-    parser.addNode(
-      md.Element.text('container', ''),
-    );
+    parser.addNode(md.Element.text('container', ''));
     return true;
   }
 }
@@ -327,15 +367,7 @@ class ContainerSyntax extends md.InlineSyntax {
 class ContainerBuilder extends MarkdownElementBuilder {
   @override
   Widget? visitElementAfter(md.Element element, _) {
-    return Text.rich(
-      TextSpan(
-        children: <InlineSpan>[
-          WidgetSpan(
-            child: Container(),
-          ),
-        ],
-      ),
-    );
+    return Text.rich(TextSpan(children: <InlineSpan>[WidgetSpan(child: Container())]));
   }
 }
 
@@ -346,9 +378,7 @@ class ContainerBuilder2 extends MarkdownElementBuilder {
       TextSpan(
         children: <InlineSpan>[
           const TextSpan(text: 'foo'),
-          WidgetSpan(
-            child: Container(),
-          ),
+          WidgetSpan(child: Container()),
         ],
       ),
     );
@@ -365,16 +395,11 @@ class InlineTextColorSyntax extends md.InlineSyntax {
   bool onMatch(md.InlineParser parser, Match match) {
     final String colorId = match.group(1)!;
     final String textContent = match.group(2)!;
-    final md.Element node = md.Element.text(
-      'inlineTextColor',
-      textContent,
-    )..attributes['color'] = colorId;
+    final md.Element node = md.Element.text('inlineTextColor', textContent)..attributes['color'] = colorId;
 
     parser.addNode(node);
 
-    parser.addNode(
-      md.Text(''),
-    );
+    parser.addNode(md.Text(''));
     return true;
   }
 }
@@ -390,11 +415,7 @@ class InlineTextColorElementBuilder extends MarkdownElementBuilder {
     final String innerText = element.textContent;
     final String color = element.attributes['color'] ?? '';
 
-    final Map<String, Color> contentColors = <String, Color>{
-      '1': Colors.red,
-      '2': Colors.green,
-      '3': Colors.blue,
-    };
+    final Map<String, Color> contentColors = <String, Color>{'1': Colors.red, '2': Colors.green, '3': Colors.blue};
     final Color? contentColor = contentColors[color];
 
     return Text.rich(
@@ -425,7 +446,10 @@ class LinkTagBuilder extends MarkdownElementBuilder {
 class NoteBuilder extends MarkdownElementBuilder {
   @override
   Widget? visitText(md.Text text, TextStyle? preferredStyle) {
-    return ColoredBox(color: Colors.red, child: Text(text.text, style: preferredStyle));
+    return ColoredBox(
+      color: Colors.red,
+      child: Text(text.text, style: preferredStyle),
+    );
   }
 
   @override
@@ -459,7 +483,10 @@ class CustomTagBlockBuilder extends MarkdownElementBuilder {
   ) {
     if (element.tag == 'custom') {
       final String content = element.attributes['content']!;
-      return ColoredBox(color: Colors.red, child: Text(content, style: preferredStyle));
+      return ColoredBox(
+        color: Colors.red,
+        child: Text(content, style: preferredStyle),
+      );
     }
     return const SizedBox.shrink();
   }

@@ -100,7 +100,8 @@ class SubscriptSyntaxDemo extends StatelessWidget implements MarkdownDemoWidget 
   String get title => SubscriptSyntaxDemo._title;
 
   @override
-  String get description => 'An example of how to create a custom inline '
+  String get description =>
+      'An example of how to create a custom inline '
       'syntax parser and element builder for numerical subscripts.';
 
   @override
@@ -117,9 +118,7 @@ class SubscriptSyntaxDemo extends StatelessWidget implements MarkdownDemoWidget 
         if (snapshot.connectionState == ConnectionState.done) {
           return Markdown(
             data: snapshot.data!,
-            builders: <String, MarkdownElementBuilder>{
-              'sub': SubscriptBuilder(),
-            },
+            builders: <String, MarkdownElementBuilder>{'sub': SubscriptBuilder()},
             extensionSet: md.ExtensionSet(<md.BlockSyntax>[], <md.InlineSyntax>[SubscriptSyntax()]),
           );
         } else {
