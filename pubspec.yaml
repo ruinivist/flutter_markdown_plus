@@ -9,10 +9,11 @@ documentation: https://pub.dev/documentation/flutter_markdown_plus/latest/
 version: 1.0.12
 
 environment:
-  sdk: ^3.9.0
-  flutter: ">=3.27.1"
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
 
 dependencies:
+  cupertino_ui: ^1.1.7
   flutter:
     sdk: flutter
   flutter_math_fork: ^0.7.4
@@ -21,6 +22,7 @@ dependencies:
       url: https://github.com/ruinivist/dart-tools.git
       ref: main
       path: pkgs/markdown
+  material_ui: ^1.11.1
   meta: ^1.16.0
   path: ^1.9.1
 

@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:material_ui/material_ui.dart' show Icon, Icons, Scrollbar, SelectableText;
 import 'package:markdown/markdown.dart' as md;
 
 import '_functions_io.dart' if (dart.library.js_interop) '_functions_web.dart';

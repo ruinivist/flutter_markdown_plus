@@ -1,7 +1,7 @@
 // Provides an editable comparison of Markdown using Plane's visual defaults.
 // Run by the example app's dedicated make preview entry point.
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 

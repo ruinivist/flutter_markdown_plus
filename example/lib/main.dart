@@ -10,7 +10,7 @@
 /// Flutter app demonstrates the use of headers, rules, and emphasis text from
 /// plain text Markdown syntax.
 ///
-/// import 'package:flutter/material.dart';
+/// import 'package:material_ui/material_ui.dart';
 /// import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 ///
 /// const String _markdownData = """
@@ -56,7 +56,7 @@
 /// flutter_markdown_plus package.
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'screens/demo_screen.dart';
 import 'screens/home_screen.dart';
 import 'shared/markdown_demo_widget.dart';

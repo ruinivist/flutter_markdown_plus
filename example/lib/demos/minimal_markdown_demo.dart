@@ -5,7 +5,7 @@
 // TODO(goderbauer): Restructure the examples to avoid this ignore, https://github.com/flutter/flutter/issues/110208.
 // ignore_for_file: avoid_implementing_value_types
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import '../shared/markdown_demo_widget.dart';
 
@@ -49,7 +49,7 @@ plain text Markdown syntax.
 The code sample below demonstrates a simple Flutter app with a Markdown widget.
 
 ```
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 const String _markdownData = \"""

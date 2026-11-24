@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoColors, CupertinoThemeData;
+import 'package:material_ui/material_ui.dart' show Colors, ThemeData;
 
 /// Defines which [TextStyle] objects to use for which Markdown elements.
 class MarkdownStyleSheet {

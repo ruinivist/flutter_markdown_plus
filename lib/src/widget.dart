@@ -5,9 +5,10 @@
 // Integration and styling have been modified; see LICENSE.latex.
 
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
+import 'package:material_ui/material_ui.dart' show AdaptiveTextSelectionToolbar, Colors;
 import 'package:markdown/markdown.dart' as md;
 
 import '../flutter_markdown_plus.dart';

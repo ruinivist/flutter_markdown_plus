@@ -76,7 +76,7 @@ To migrate from `flutter_markdown_plus_latex`, remove that dependency and its im
 
 ## Installation
 
-This fork requires Dart 3.9 or newer and uses the source-tracking Markdown parser in [ruinivist/dart-tools](https://github.com/ruinivist/dart-tools/tree/main/pkgs/markdown). Install it from Git:
+This fork requires Dart 3.13 or newer and Flutter 3.47 or newer, and uses the source-tracking Markdown parser in [ruinivist/dart-tools](https://github.com/ruinivist/dart-tools/tree/main/pkgs/markdown). Install it from Git:
 
 ```yaml
 dependencies:

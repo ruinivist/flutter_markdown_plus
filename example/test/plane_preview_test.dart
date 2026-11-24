@@ -1,7 +1,7 @@
 // Checks the live editing and temporary controls in the Plane preview.
 // Run against the example app when changing its comparison UI.
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
 

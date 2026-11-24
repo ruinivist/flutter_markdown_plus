@@ -3,7 +3,7 @@
 
 import 'dart:collection';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_markdown_plus/latex.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
@@ -372,8 +372,11 @@ void defineTests() {
           home: Scaffold(body: MarkdownBody(data: r'$\unknowncommand{x}$')),
         ),
       );
-      expect(tester.widget<Math>(find.byType(Math)).parseError, isNotNull);
-      expect(find.byType(SelectableText), findsOneWidget);
+      final Math math = tester.widget<Math>(find.byType(Math));
+      expect(math.parseError, isNotNull);
+      final EditableText fallback = tester.widget<EditableText>(find.text(math.parseError!.messageWithType));
+      expect(fallback.readOnly, isTrue);
+      expect(fallback.enableInteractiveSelection, isTrue);
       expect(tester.takeException(), isNull);
     });
 
